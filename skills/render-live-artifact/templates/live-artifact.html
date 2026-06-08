@@ -1,0 +1,56 @@
+<!-- Live artifact template for an ir-mcp orchestrator.
+     Claude: copy this into create_artifact, set mcp_tools to the SAME tool name(s)
+     as TOOL below, and adapt render() to the real response shape. -->
+<div id="status" style="font:14px system-ui;opacity:.6;padding:8px 0">Loading…</div>
+<div id="app" style="font:14px system-ui"></div>
+
+<script>
+  const TOOL = "mcp__ir-mcp__YOUR_ORCHESTRATOR";  // the ir-mcp tool you just called
+  const ARGS = {};            // <-- same arguments you passed when calling it
+
+  function unwrap(r) {
+    if (r && r.isError) throw new Error("Tool returned an error");
+    if (r && r.structuredContent != null) return r.structuredContent;
+    try { return JSON.parse(r.content[0].text); }
+    catch { return r.content?.[0]?.text ?? ""; }
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, c =>
+      ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
+  }
+
+  // Mixed-output renderer: branches on the shape it actually receives.
+  function render(data) {
+    const app = document.getElementById("app");
+    if (Array.isArray(data) && data.length && typeof data[0] === "object") {
+      const cols = Object.keys(data[0]);
+      app.innerHTML =
+        "<table style='border-collapse:collapse;width:100%'>" +
+        "<thead><tr>" + cols.map(c =>
+          `<th style='text-align:left;border-bottom:1px solid #8884;padding:6px'>${esc(c)}</th>`).join("") +
+        "</tr></thead><tbody>" +
+        data.map(row => "<tr>" + cols.map(c =>
+          `<td style='border-bottom:1px solid #8882;padding:6px'>${esc(row[c])}</td>`).join("") + "</tr>").join("") +
+        "</tbody></table>";
+    } else if (data && typeof data === "object") {
+      app.innerHTML = "<pre style='white-space:pre-wrap'>" + esc(JSON.stringify(data, null, 2)) + "</pre>";
+    } else if (typeof data === "string" && /<[a-z][\s\S]*>/i.test(data)) {
+      app.innerHTML = data;            // looks like HTML output
+    } else {
+      app.innerHTML = "<pre style='white-space:pre-wrap'>" + esc(data) + "</pre>";
+    }
+  }
+
+  async function load() {
+    const status = document.getElementById("status");
+    try {
+      const r = await window.cowork.callMcpTool(TOOL, ARGS);
+      render(unwrap(r));
+      status.style.display = "none";
+    } catch (e) {
+      status.textContent = "Failed to load: " + e.message;
+    }
+  }
+  load();
+</script>

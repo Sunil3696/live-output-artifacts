@@ -1,0 +1,19 @@
+{
+  "name": "hotei-marketplace",
+  "description": "Plugins from Hotei Media Production.",
+  "owner": {
+    "name": "Hotei Media Production",
+    "email": "hotei.media.production@gmail.com"
+  },
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "name": "live-output-artifacts",
+      "version": "1.0.0",
+      "description": "Auto-renders MCP tool output as a live, re-fetching Cowork artifact.",
+      "source": "https://github.com/Sunil3696/live-output-artifacts",
+      "category": "productivity",
+      "keywords": ["mcp", "live-artifact", "cowork"]
+    }
+  ]
+}

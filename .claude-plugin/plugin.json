@@ -1,0 +1,12 @@
+{
+  "name": "live-output-artifacts",
+  "version": "1.0.0",
+  "description": "Bundles your MCP server and a skill that auto-renders its output as a live, re-fetching Cowork artifact.",
+  "author": {
+    "name": "Hotei Media Production",
+    "email": "hotei.media.production@gmail.com"
+  },
+  "repository": "https://github.com/Sunil3696/live-output-artifacts",
+  "license": "MIT",
+  "keywords": ["mcp", "live-artifact", "cowork", "llm-output"]
+}

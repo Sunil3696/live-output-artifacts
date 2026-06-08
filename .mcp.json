@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ir-mcp": {
+      "type": "http",
+      "url": "https://paytest.testir.xyz/mcp"
+    }
+  }
+}
