@@ -10,10 +10,14 @@
     {
       "name": "live-output-artifacts",
       "source": "./",
-      "version": "1.0.0",
-      "description": "Auto-renders MCP tool output as a live, re-fetching Cowork artifact.",
+      "version": "1.1.0",
+      "description": "Live Cowork artifacts for IR MCP \u2014 auto-render agent output, plus a Rockstar Agents home listing every agent's skills and tools.",
       "category": "productivity",
-      "keywords": ["mcp", "live-artifact", "cowork"]
+      "keywords": [
+        "mcp",
+        "live-artifact",
+        "cowork"
+      ]
     }
   ]
 }

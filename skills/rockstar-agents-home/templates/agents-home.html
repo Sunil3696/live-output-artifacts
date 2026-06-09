@@ -1,0 +1,80 @@
+<!-- Rockstar Agents home — lists every IR agent (orchestrator) the user can
+     access; click an agent to reveal its skills + tools. Live: re-fetches on
+     reopen. Claude: copy into create_artifact, set mcp_tools to [TOOL] below. -->
+<style>
+  #ra-status { font:14px system-ui,-apple-system,sans-serif; opacity:.6; padding:8px 0; }
+  #ra-wrap { font:14px system-ui,-apple-system,sans-serif; color:#e7e3f5; }
+  #ra-head { display:flex; align-items:baseline; gap:10px; margin:2px 0 14px; }
+  #ra-head h1 { font-size:20px; font-weight:700; margin:0; letter-spacing:-.01em; }
+  #ra-head .count { font-size:12px; color:#9a90b8; }
+  #ra-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+  .ra-card { background:linear-gradient(180deg,#1a1530,#15101f); border:1px solid #2c2444;
+             border-radius:14px; padding:14px; cursor:pointer;
+             transition:border-color .15s ease, transform .15s ease; }
+  .ra-card:hover { border-color:#5b4b9a; transform:translateY(-2px); }
+  .ra-card h3 { margin:0 0 4px; font-size:15px; font-weight:700; color:#fff; }
+  .ra-card p { margin:0; font-size:13px; color:#a99fc4; line-height:1.45; }
+  .ra-meta { margin-top:10px; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:#7c719e; }
+  .ra-detail { margin-top:12px; padding-top:12px; border-top:1px solid #2c2444; display:none; }
+  .ra-card.open .ra-detail { display:block; }
+  .ra-detail h4 { margin:10px 0 6px; font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:#9a90b8; }
+  .ra-item { padding:6px 0; border-bottom:1px solid #221b39; }
+  .ra-item:last-child { border-bottom:0; }
+  .ra-item .n { font-size:13px; font-weight:600; color:#e7e3f5; }
+  .ra-item .d { font-size:12px; color:#9a90b8; }
+  .ra-empty { color:#9a90b8; font-size:13px; }
+</style>
+<div id="ra-status">Loading agents…</div>
+<div id="ra-wrap" style="display:none">
+  <div id="ra-head"><h1>Rockstar Agents</h1><span class="count" id="ra-count"></span></div>
+  <div id="ra-grid"></div>
+</div>
+<script>
+  const TOOL = "mcp__ir-mcp__rockstar_agents";  // read-only catalog tool
+  const ARGS = {};
+
+  function unwrap(r) {
+    if (r && r.isError) throw new Error("Tool returned an error");
+    if (r && r.structuredContent != null) return r.structuredContent;
+    try { return JSON.parse(r.content[0].text); }
+    catch { return r.content?.[0]?.text ?? {}; }
+  }
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"]/g, c =>
+      ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
+  }
+  function itemRow(x) {
+    const name = esc(x.name || x.skillId);
+    const desc = x.description ? `<div class="d">${esc(x.description)}</div>` : "";
+    return `<div class="ra-item"><div class="n">${name}</div>${desc}</div>`;
+  }
+  function card(a) {
+    const skills = (a.skills || []).map(itemRow).join("") || '<div class="ra-empty">No skills</div>';
+    const tools  = (a.tools  || []).map(itemRow).join("") || '<div class="ra-empty">No tools</div>';
+    return `<div class="ra-card" onclick="this.classList.toggle('open')">
+      <h3>${esc(a.displayName || a.name)}</h3>
+      <p>${esc(a.description || "")}</p>
+      <div class="ra-meta">${(a.skills||[]).length} skills · ${(a.tools||[]).length} tools — click to expand</div>
+      <div class="ra-detail"><h4>Skills</h4>${skills}<h4>Tools</h4>${tools}</div>
+    </div>`;
+  }
+  function render(data) {
+    const agents = (data && data.agents) || [];
+    document.getElementById("ra-count").textContent = agents.length + " agents";
+    document.getElementById("ra-grid").innerHTML = agents.length
+      ? agents.map(card).join("")
+      : '<div class="ra-empty">No agents available yet.</div>';
+  }
+  async function load() {
+    const status = document.getElementById("ra-status");
+    try {
+      const r = await window.cowork.callMcpTool(TOOL, ARGS);
+      render(unwrap(r));
+      status.style.display = "none";
+      document.getElementById("ra-wrap").style.display = "block";
+    } catch (e) {
+      status.textContent = "Failed to load agents: " + e.message;
+    }
+  }
+  load();
+</script>
