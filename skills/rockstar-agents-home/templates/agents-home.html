@@ -23,6 +23,18 @@
   .ra-item .n { font-size:13px; font-weight:600; color:#e7e3f5; }
   .ra-item .d { font-size:12px; color:#9a90b8; }
   .ra-empty { color:#9a90b8; font-size:13px; }
+  .ra-start { display:inline-flex; align-items:center; gap:6px; margin-top:7px;
+              padding:5px 11px; font:600 12px system-ui,-apple-system,sans-serif;
+              color:#fff; text-decoration:none; border-radius:8px;
+              background:linear-gradient(180deg,#6d54c8,#5a3fb0); border:1px solid #7a63d0;
+              transition:transform .12s ease, filter .12s ease; }
+  .ra-start:hover { transform:translateY(-1px); filter:brightness(1.08); }
+  .ra-start:active { transform:translateY(0); }
+  .ra-toast { position:fixed; left:50%; bottom:20px; transform:translateX(-50%);
+              background:#221b39; color:#e7e3f5; border:1px solid #4a3d75;
+              padding:9px 14px; border-radius:10px; font:13px system-ui; opacity:0;
+              transition:opacity .2s ease; pointer-events:none; z-index:50; }
+  .ra-toast.show { opacity:1; }
 </style>
 <div id="ra-status">Loading agents…</div>
 <div id="ra-wrap" style="display:none">
@@ -43,14 +55,37 @@
     return String(s ?? "").replace(/[&<>"]/g, c =>
       ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
   }
-  function itemRow(x) {
-    const name = esc(x.name || x.skillId);
+  function itemRow(x, kind) {
+    const raw  = x.name || x.skillId || "";
+    const name = esc(raw);
     const desc = x.description ? `<div class="d">${esc(x.description)}</div>` : "";
-    return `<div class="ra-item"><div class="n">${name}</div>${desc}</div>`;
+    let action = "";
+    if (kind === "skill") {
+      const prompt = "Hey Rockstar, run the " + raw + " skill";
+      const link = "claude://cowork/new?q=" + encodeURIComponent(prompt);
+      // Deeplink opens a NEW Cowork chat prefilled; clipboard fallback if the
+      // sandbox blocks custom-scheme navigation.
+      action = `<a class="ra-start" href="${esc(link)}" data-prompt="${esc(prompt)}"
+        onclick="event.stopPropagation(); startChat(this)">▶ Start chat</a>`;
+    }
+    return `<div class="ra-item"><div class="n">${name}</div>${desc}${action}</div>`;
+  }
+  function startChat(el) {
+    // Let the href fire (opens Claude). Also copy as a fallback so the user can
+    // paste into a new chat if the deeplink is blocked.
+    const prompt = el.getAttribute("data-prompt") || "";
+    try { navigator.clipboard && navigator.clipboard.writeText(prompt); } catch (e) {}
+    toast("Opening a new chat… (if nothing opens, paste — it's copied)");
+  }
+  function toast(msg) {
+    let t = document.getElementById("ra-toast");
+    if (!t) { t = document.createElement("div"); t.id = "ra-toast"; t.className = "ra-toast"; document.body.appendChild(t); }
+    t.textContent = msg; t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2600);
   }
   function card(a) {
-    const skills = (a.skills || []).map(itemRow).join("") || '<div class="ra-empty">No skills</div>';
-    const tools  = (a.tools  || []).map(itemRow).join("") || '<div class="ra-empty">No tools</div>';
+    const skills = (a.skills || []).map(s => itemRow(s, "skill")).join("") || '<div class="ra-empty">No skills</div>';
+    const tools  = (a.tools  || []).map(t => itemRow(t, "tool")).join("")  || '<div class="ra-empty">No tools</div>';
     return `<div class="ra-card" onclick="this.classList.toggle('open')">
       <h3>${esc(a.displayName || a.name)}</h3>
       <p>${esc(a.description || "")}</p>
