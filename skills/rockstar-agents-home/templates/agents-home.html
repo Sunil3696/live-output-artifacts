@@ -1,9 +1,17 @@
 <!-- Rockstar Agents home — lists every IR agent (orchestrator) the user can
      access; expand an agent to see its skills + tools; each skill has a
      "Start chat" button that opens a NEW Cowork chat for that skill.
-     LIVE: re-fetches on reopen. Claude: copy this HTML verbatim into
-     mcp__cowork__create_artifact and set mcp_tools to [TOOL] below. Do NOT
-     edit the markup, do NOT paste any instructions into the page. -->
+     LIVE: re-fetches on reopen.
+
+     Claude — before creating the artifact you MUST do ONE substitution:
+     replace the TWO occurrences of the token __ROCKSTAR_AGENTS_TOOL__ (the
+     `const TOOL` line below AND the `mcp_tools` array you pass to
+     create_artifact) with the EXACT fully-qualified name of the rockstar_agents
+     tool as it appears in THIS session's available tools — it looks like
+     `mcp__<serverId>__rockstar_agents` where <serverId> is an opaque UUID.
+     Do NOT use `mcp__ir-mcp__rockstar_agents` (the friendly connector name) —
+     it does NOT resolve inside the Cowork artifact sandbox and the load fails.
+     Otherwise copy this HTML as-is; do NOT paste any instructions into the page. -->
 <style>
   /* Light theme by default (Cowork artifacts render on a white surface),
      auto-adapting to dark mode. */
@@ -98,7 +106,9 @@
 </div>
 
 <script>
-  const TOOL = "mcp__ir-mcp__rockstar_agents";   // read-only catalog tool
+  // Claude replaces __ROCKSTAR_AGENTS_TOOL__ with the EXACT loaded tool name
+  // (mcp__<serverId>__rockstar_agents, UUID serverId — NOT mcp__ir-mcp__...).
+  const TOOL = "__ROCKSTAR_AGENTS_TOOL__";   // read-only catalog tool
   const ARGS = {};
   const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
 
