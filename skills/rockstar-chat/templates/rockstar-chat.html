@@ -1,0 +1,197 @@
+<!-- Rockstar Chat - a live command-center chat with the Rockstar orchestrator.
+     Claude: replace __ROCKSTAR_TOOL__ (TWO places: the `const TOOL` line below
+     AND the mcp_tools array you pass to create_artifact) with the EXACT loaded
+     tool name as it appears in this session - mcp__<serverId>__rockstar, where
+     <serverId> is an opaque UUID. Do NOT use mcp__ir-mcp__rockstar (the friendly
+     name) - it does NOT resolve in the Cowork artifact sandbox and the chat can't
+     reach the agent. Copy the rest as-is; do NOT paste instructions into the page. -->
+<style>
+  *{box-sizing:border-box}
+  html,body{ margin:0; background:#080b13; }
+  :root{
+    --bd:rgba(150,130,255,.14); --bd-h:rgba(165,135,255,.6);
+    --txt:#eef0f8; --muted:#9aa0b8; --faint:#6b7088;
+    --acc1:#7c5cff; --acc2:#d24bef;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,monospace;
+  }
+  #rc{ display:flex; flex-direction:column; height:100vh; min-height:100vh;
+    font:14.5px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+    color:var(--txt);
+    background:
+      radial-gradient(1100px 520px at 12% -12%, rgba(124,92,255,.18), transparent 58%),
+      radial-gradient(900px 440px at 102% -4%, rgba(210,75,239,.12), transparent 55%),
+      #080b13; }
+  .rc-head{ display:flex; align-items:center; gap:11px; padding:16px 20px; border-bottom:1px solid var(--bd); }
+  .rc-logo{ width:34px; height:34px; border-radius:10px; flex:0 0 auto;
+    background:linear-gradient(135deg,var(--acc1),var(--acc2));
+    display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px rgba(124,92,255,.4); }
+  .rc-logo svg{ width:18px; height:18px; color:#fff; }
+  .rc-title{ font-weight:700; font-size:15.5px; letter-spacing:-.01em; }
+  .rc-sub{ font:600 10.5px var(--mono); letter-spacing:.12em; text-transform:uppercase;
+    color:#36e0a0; display:flex; align-items:center; gap:6px; margin-top:2px; }
+  .rc-sub::before{ content:""; width:6px; height:6px; border-radius:50%; background:#36e0a0;
+    box-shadow:0 0 9px #36e0a0; animation:rcPulse 1.8s ease-in-out infinite; }
+  @keyframes rcPulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .rc-msgs{ flex:1; overflow-y:auto; padding:22px 20px; display:flex; flex-direction:column; gap:14px; }
+  .rc-row{ display:flex; gap:10px; max-width:760px; }
+  .rc-row.me{ align-self:flex-end; flex-direction:row-reverse; }
+  .rc-av{ width:28px; height:28px; border-radius:8px; flex:0 0 auto; margin-top:2px;
+    display:flex; align-items:center; justify-content:center; font:700 10px var(--mono); }
+  .rc-av.bot{ background:linear-gradient(135deg,var(--acc1),var(--acc2)); color:#fff; }
+  .rc-av.usr{ background:rgba(255,255,255,.08); color:var(--muted); border:1px solid var(--bd); }
+  .rc-bub{ padding:11px 14px; border-radius:14px; font-size:14px; line-height:1.55; overflow-wrap:anywhere; }
+  .rc-row.bot .rc-bub{ background:rgba(255,255,255,.045); border:1px solid var(--bd); border-top-left-radius:4px; }
+  .rc-row.me .rc-bub{ background:linear-gradient(135deg,rgba(124,92,255,.92),rgba(210,75,239,.85));
+    border-top-right-radius:4px; color:#fff; }
+  .rc-bub p{ margin:0 0 8px } .rc-bub p:last-child{ margin:0 }
+  .rc-bub strong{ font-weight:700 }
+  .rc-bub code{ font:12.5px var(--mono); background:rgba(255,255,255,.08); padding:1px 5px; border-radius:5px; }
+  .rc-bub ul{ margin:6px 0; padding-left:18px } .rc-bub li{ margin:3px 0 }
+  .rc-bub h3{ margin:6px 0 4px; font-size:14.5px; font-weight:700 }
+  .rc-typing{ display:inline-flex; gap:5px; padding:3px 1px; }
+  .rc-typing span{ width:7px; height:7px; border-radius:50%; background:var(--muted); animation:rcBounce 1.2s infinite; }
+  .rc-typing span:nth-child(2){ animation-delay:.18s } .rc-typing span:nth-child(3){ animation-delay:.36s }
+  @keyframes rcBounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+  .rc-comp{ padding:14px 16px 16px; border-top:1px solid var(--bd); display:flex; gap:10px; align-items:flex-end; }
+  .rc-input{ flex:1; resize:none; max-height:140px; min-height:46px; padding:13px 15px; border-radius:13px;
+    background:rgba(255,255,255,.04); border:1px solid var(--bd); color:var(--txt);
+    font:14.5px/1.5 -apple-system,system-ui,sans-serif; outline:none; transition:border-color .15s, box-shadow .15s; }
+  .rc-input::placeholder{ color:var(--faint) }
+  .rc-input:focus{ border-color:var(--bd-h); box-shadow:0 0 0 4px rgba(124,92,255,.14) }
+  .rc-send{ flex:0 0 auto; width:46px; height:46px; border-radius:13px; border:0; cursor:pointer;
+    background:linear-gradient(135deg,var(--acc1),var(--acc2)); display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 16px rgba(124,92,255,.4); transition:filter .14s, transform .12s; }
+  .rc-send:hover{ filter:brightness(1.1) } .rc-send:active{ transform:scale(.95) }
+  .rc-send:disabled{ opacity:.4; cursor:not-allowed; filter:none }
+  .rc-send svg{ width:18px; height:18px; color:#fff }
+  .rc-err{ color:#ff8585; font-size:12.5px }
+</style>
+
+<div id="rc">
+  <div class="rc-head">
+    <div class="rc-logo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.6l1.9 5.6 5.6 1.9-5.6 1.9L12 17.6l-1.9-5.6L4.5 10.1l5.6-1.9z"/></svg></div>
+    <div>
+      <div class="rc-title">Rockstar</div>
+      <div class="rc-sub">Online</div>
+    </div>
+  </div>
+  <div class="rc-msgs" id="rc-msgs"></div>
+  <div class="rc-comp">
+    <textarea id="rc-input" class="rc-input" rows="1" placeholder="Message Rockstar&hellip;"></textarea>
+    <button id="rc-send" class="rc-send" title="Send">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  // Claude replaces __ROCKSTAR_TOOL__ with the EXACT loaded tool name
+  // (mcp__<serverId>__rockstar, UUID serverId - NOT mcp__ir-mcp__rockstar).
+  const TOOL = "__ROCKSTAR_TOOL__";
+  let sessionId = null;
+  let busy = false;
+
+  const msgsEl = document.getElementById("rc-msgs");
+  const inputEl = document.getElementById("rc-input");
+  const sendEl = document.getElementById("rc-send");
+
+  function esc(s){ return String(s ?? "").replace(/[&<>"]/g, c =>
+    ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c])); }
+
+  // Minimal, safe markdown -> HTML (escapes first, then formats).
+  function md(s){
+    let t = esc(s);
+    t = t.replace(/```([\s\S]*?)```/g, (m,c) =>
+      "<pre style='white-space:pre-wrap;background:rgba(255,255,255,.06);padding:10px;border-radius:8px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px'>"+c.trim()+"</pre>");
+    t = t.replace(/`([^`]+)`/g, "<code>$1</code>");
+    t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    t = t.replace(/(^|\n)#{1,3}\s+(.+)/g, "$1<h3>$2</h3>");
+    t = t.replace(/(?:^|\n)[-*]\s+(.+)/g, "\n<li>$1</li>");
+    t = t.replace(/(<li>[\s\S]*?<\/li>)/g, "<ul>$1</ul>");
+    t = t.split(/\n{2,}/).map(p => /<(h3|ul|pre)/.test(p) ? p : "<p>"+p.replace(/\n/g,"<br>")+"</p>").join("");
+    return t;
+  }
+
+  function addMsg(role, html){
+    const row = document.createElement("div");
+    row.className = "rc-row " + (role === "me" ? "me" : "bot");
+    const av = document.createElement("div");
+    av.className = "rc-av " + (role === "me" ? "usr" : "bot");
+    av.textContent = role === "me" ? "YOU" : "R";
+    const bub = document.createElement("div");
+    bub.className = "rc-bub";
+    bub.innerHTML = html;
+    row.appendChild(av); row.appendChild(bub);
+    msgsEl.appendChild(row);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+
+  function showTyping(){
+    const row = document.createElement("div");
+    row.className = "rc-row bot"; row.id = "rc-typing-row";
+    row.innerHTML = '<div class="rc-av bot">R</div><div class="rc-bub"><div class="rc-typing"><span></span><span></span><span></span></div></div>';
+    msgsEl.appendChild(row); msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+  function hideTyping(){ const r = document.getElementById("rc-typing-row"); if (r) r.remove(); }
+
+  // Pull the reply text + session_id out of the tool response, defensively
+  // (handles structuredContent, JSON text, or raw text with scaffolding).
+  function parseReply(r){
+    if (r && r.isError) throw new Error("the agent returned an error");
+    let text = "", sid = null;
+    const sc = r && r.structuredContent;
+    if (sc && typeof sc === "object"){
+      sid = sc.session_id || sc.sessionId || null;
+      text = sc.reply || sc.response || sc.message || sc.text || sc.output || JSON.stringify(sc);
+    } else {
+      const raw = (r && r.content && r.content[0] && r.content[0].text) || "";
+      try {
+        const o = JSON.parse(raw);
+        sid = o.session_id || o.sessionId || null;
+        text = o.reply || o.response || o.message || o.text || o.output || raw;
+      } catch {
+        text = raw;
+        const m = raw.match(/ORCHESTRATOR_SESSION[\s:="']+([A-Za-z0-9_\-]+)/i);
+        if (m) sid = m[1];
+      }
+    }
+    text = String(text).replace(/ORCHESTRATOR_SESSION[\s:="'].*$/gim, "").trim();
+    return { text: text || "(no response)", sid };
+  }
+
+  async function send(){
+    const text = inputEl.value.trim();
+    if (!text || busy) return;
+    busy = true; sendEl.disabled = true;
+    addMsg("me", esc(text).replace(/\n/g, "<br>"));
+    inputEl.value = ""; inputEl.style.height = "auto";
+    showTyping();
+    try {
+      const args = { user_input: text };
+      if (sessionId) args.session_id = sessionId;
+      const r = await window.cowork.callMcpTool(TOOL, args);
+      const { text: reply, sid } = parseReply(r);
+      if (sid) sessionId = sid;
+      hideTyping();
+      addMsg("bot", md(reply));
+    } catch (e) {
+      hideTyping();
+      addMsg("bot", "<span class='rc-err'>Couldn't reach Rockstar: " + esc(e.message) + "</span>");
+    } finally {
+      busy = false; sendEl.disabled = false; inputEl.focus();
+    }
+  }
+
+  sendEl.addEventListener("click", send);
+  inputEl.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); send(); }
+  });
+  inputEl.addEventListener("input", () => {
+    inputEl.style.height = "auto";
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + "px";
+  });
+
+  // Opening greeting (static - does not call the tool).
+  addMsg("bot", md("Hey, I'm **Rockstar** - your strategic chief of staff. What are we working on today? Tell me about your business or a goal, or pick a play: growth, offers, sales, content, launch."));
+  inputEl.focus();
+</script>
