@@ -18,14 +18,20 @@ Render the **Rockstar Agent Command Center** as a LIVE Cowork artifact.
    only call tools listed here).
 
 ## What the artifact includes
-The template renders a full command center with a top nav: **Dashboard** (completion ring,
-AI "Your next move", activity heatmap + streak, Pinned, Continue), **Playbooks** (guided
-multi-skill sequences), **Journey Map** (Mermaid flow of the playbooks), **Goal Roadmap**
-(type a goal, the AI builds an ordered path), and **All Skills** (search, filter, launch,
-favorites, per-skill notes + output links, mark-done). Usage is tracked **per user,
-device-local** (browser localStorage) — private to each user, not synced across devices.
-The AI panels use `window.cowork.askClaude` and fall back gracefully if it's unavailable.
-No extra setup or `mcp_tools` beyond the one `__rockstar_agents` tool.
+The template renders a full command center in the **MyGentic brand** (paper · indigo,
+Instrument Serif, MKG logo) with a top nav. The hero tab is the **AOS Map** — the company
+as a live tech-tree built from the real skill catalog, laid out as an ordered
+Foundation → Offer → Marketing → Lead Gen → Sales → Delivery → Ops & AI journey, scoped by a
+**client selector** and driven by `my_outputs`: a node lights up **Shipped** when a
+deliverable exists for that skill+client, with **Available / Locked** progression, a
+**Next best action** banner, and a **Build / Run** toggle. The rest: **Dashboard**
+(completion ring, AI "Your next move", activity heatmap + streak, Pinned, Continue),
+**Playbooks** (guided multi-skill sequences), **Goal Roadmap** (type a goal, the AI builds
+an ordered path), **All Skills** (search, filter, launch, favorites, per-skill notes + output
+links, mark-done), and **Outputs** (every deliverable, filterable by client/skill/agent).
+Personal usage is tracked **per user, device-local** (browser localStorage) — private to each
+user. The AI panels use `window.cowork.askClaude` and fall back gracefully if it's
+unavailable. Pass BOTH `__rockstar_agents` and `__my_outputs` in `mcp_tools`.
 
 ## Tool-name rule — THIS is what was breaking it
 In Cowork live artifacts, MCP calls route by the **fully-qualified UUID name**

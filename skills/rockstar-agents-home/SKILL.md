@@ -12,9 +12,12 @@ description: >
 # Rockstar Agent Command Center (live)
 
 Render a LIVE Cowork artifact: a per-user command center over every Rockstar / IR
-agent the user can access. It tracks which skills they've used vs. pending, suggests
-the next move, and lets them launch any skill. Each skill has a **Start chat** button
-that opens a new Cowork chat for that skill.
+agent the user can access, styled in the **MyGentic brand** (paper · indigo, Instrument
+Serif display, MKG logo). Its hero is **THE AOS MAP** — the company as a living tech-tree
+built from the real skill catalog and driven **per client** by the user's deliverables.
+It also tracks which skills they've used vs. pending, suggests the next move, and lets
+them launch any skill. Each skill has a **Start chat** button that opens a new Cowork
+chat for that skill.
 
 ## Procedure
 1. **Find the EXACT tool names — there are TWO.** Look at the tools available in THIS
@@ -35,12 +38,18 @@ that opens a new Cowork chat for that skill.
    `window.cowork.callMcpTool`, renders the full command center, and refreshes on reopen.
 
 ## What the template renders
-A command center with a top nav:
+A command center with a top nav (AOS Map is the default hero tab):
+- **AOS Map** — the company as a live tech-tree built from the real catalog: every skill is a
+  node grouped into an ordered business-building journey (Foundation → Offer → Marketing →
+  Lead Gen → Sales → Delivery → Ops & AI). A **client selector** (same clients as Outputs)
+  scopes it; when a deliverable exists for a skill+client the node lights up **Shipped**,
+  unshipped nodes in unlocked stages are **Available**, and later stages stay **Locked** until
+  the previous stage has activity. A **Next best action** banner points at the first available
+  node, and a **Build / Run** toggle shows the full tree vs. only what's live/actionable.
 - **Dashboard** — completion ring (done/pending/total), an AI "Your next move" panel, an
   activity heatmap + day streak, a Pinned row, and a Continue row.
 - **Playbooks** — guided multi-skill sequences (e.g. "Launch a new offer") with progress
   and a highlighted next step.
-- **Journey Map** — a Mermaid flow of the playbook chains, colored by done/pending.
 - **Goal Roadmap** — the user types a goal and the AI builds an ordered path from the catalog.
 - **All Skills** — search, category filters, launch, favorites (★), per-skill notes + output
   links, and mark-done.
@@ -48,7 +57,8 @@ A command center with a top nav:
   filter chips for **Client / Skill / Agent**, and cards that open the FULL deliverable in a
   modal (lazy-loaded the first time the tab is opened).
 
-Progress, favorites, notes and activity are stored **per user, device-local** (browser
+The AOS Map's Shipped state is read live from `my_outputs` (per selected client). Personal
+progress, favorites, notes and activity are stored **per user, device-local** (browser
 localStorage) — private to each user, not synced across devices. AI panels use
 `window.cowork.askClaude` and fall back to deterministic suggestions if it's unavailable.
 
