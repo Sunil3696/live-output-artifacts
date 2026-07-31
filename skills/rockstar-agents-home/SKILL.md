@@ -39,6 +39,18 @@ chat for that skill.
 
 ## What the template renders
 A command center with a top nav (AOS Map is the default hero tab):
+- **Business Dials** — a first-run onboarding + five-dial sprint engine. On a new user's first
+  visit a wizard auto-opens (also a permanent tab) that asks a few real questions — goal &
+  horizon, then Lead Gen / Sales / Delivery / Finance / Revenue actuals-vs-targets — derives a
+  RAG rating per dial, picks the single binding **constraint** (delivery > sales > lead gen >
+  finance; revenue is the scoreboard, never a workstream), and builds a focused sprint (3/5/7
+  skills by horizon) of REAL catalog skills, sequenced foundation→campaign. Each step has a
+  **Run** button; "close the sprint" re-runs the dials with the **locked** metrics, shows the
+  before/after movement, and records an immutable sprint history. It is **per-client** — the
+  same client selector as Outputs / AOS Map (from `my_outputs`), so each client the operator
+  works on gets its own dials, sprint, and history. State is device-local (`localStorage`,
+  `cc_dials_v1`, keyed by client); no server, no signup. All display text uses HTML entities
+  (no raw non-ASCII) so it renders correctly regardless of the host's charset.
 - **AOS Map** — the company as a live tech-tree built from the real catalog: every skill is a
   node grouped into an ordered business-building journey (Foundation → Offer → Marketing →
   Lead Gen → Sales → Delivery → Ops & AI). A **client selector** (same clients as Outputs)

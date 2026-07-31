@@ -436,6 +436,116 @@
   .co-doc strong{ color:var(--text-primary); font-weight:700; } .co-doc hr{ border:none; border-top:1px solid var(--border); margin:18px 0; }
   .co-copy{ display:inline-flex; align-items:center; gap:7px; cursor:pointer; padding:8px 14px; border-radius:10px; font:600 12px var(--font-body); color:var(--accent-lo); background:var(--accent-dim); border:1px solid rgba(58,79,184,.32); transition:all .14s; }
   .co-copy:hover{ color:#fff; background:var(--accent); border-color:transparent; }
+
+  /* ── BUSINESS DIALS ─────────────────────────────────────────────── */
+  :root{ --rag-green:var(--success); --rag-amber:var(--warning); --rag-red:#c0432b;
+         --rag-green-dim:var(--success-dim); --rag-amber-dim:var(--warning-dim); --rag-red-dim:rgba(192,67,43,.12); }
+  /* Dials home (tab) */
+  .bd-lead{ margin:2px 2px 20px; color:var(--text-muted); font-size:13.5px; max-width:760px; line-height:1.6; }
+  .bd-lead b{ color:var(--text-secondary); }
+  .bd-sprintbar{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:0 2px 16px; }
+  .bd-sprintbar .tag{ font:700 10px var(--font-label); letter-spacing:.14em; text-transform:uppercase; color:#fff; background:var(--accent); padding:6px 12px; border-radius:8px; }
+  .bd-sprintbar .goal{ font-size:14px; color:var(--text-secondary); } .bd-sprintbar .goal b{ color:var(--text-primary); }
+  .bd-actions{ display:flex; gap:9px; flex-wrap:wrap; margin-left:auto; }
+  .bd-clientbar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:0 2px 16px; }
+  .bd-clientbar .lbl{ font:700 10px var(--font-label); letter-spacing:.14em; text-transform:uppercase; color:var(--text-faint); margin-right:2px; }
+  .bd-step-actions{ display:flex; flex-direction:column; gap:7px; align-items:flex-end; flex:none; }
+  .bd-forclient{ font:600 11px var(--font-label); color:var(--text-faint); margin:9px 0 0; }
+  .bd-forclient b{ color:var(--text-secondary); }
+  .bd-dialgrid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; margin:0 0 6px; }
+  .bd-dial{ position:relative; background:var(--bg-overlay); border:1px solid var(--border); border-left:4px solid var(--border-hi);
+    border-radius:var(--r-lg); padding:15px 16px 14px; box-shadow:var(--sh-sm); }
+  .bd-dial.green{ border-left-color:var(--rag-green); } .bd-dial.amber{ border-left-color:var(--rag-amber); } .bd-dial.red{ border-left-color:var(--rag-red); }
+  .bd-dial.constraint{ box-shadow:0 0 0 2px var(--accent-glow), var(--sh-md); border-color:rgba(58,79,184,.4); }
+  .bd-dial__top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:9px; }
+  .bd-dial__name{ font:700 13px var(--font-label); letter-spacing:.02em; color:var(--text-primary); display:flex; align-items:center; gap:8px; }
+  .bd-dial__role{ font:700 8.5px var(--font-label); letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); }
+  .bd-pill{ font:700 9px var(--font-label); letter-spacing:.08em; text-transform:uppercase; padding:4px 9px; border-radius:999px; white-space:nowrap; }
+  .bd-pill.green{ color:var(--success-hi); background:var(--rag-green-dim); border:1px solid rgba(31,143,58,.3); }
+  .bd-pill.amber{ color:var(--warning); background:var(--rag-amber-dim); border:1px solid rgba(199,134,10,.32); }
+  .bd-pill.red{ color:var(--rag-red); background:var(--rag-red-dim); border:1px solid rgba(192,67,43,.32); }
+  .bd-dial__nums{ display:flex; align-items:baseline; gap:8px; margin-bottom:5px; }
+  .bd-dial__actual{ font-family:var(--font-display); font-size:26px; font-weight:400; color:var(--text-primary); line-height:1; }
+  .bd-dial__target{ font:600 12px var(--font-mono); color:var(--text-faint); }
+  .bd-dial__metric{ font-size:11.5px; color:var(--text-muted); line-height:1.45; }
+  .bd-cons{ margin:16px 0 6px; padding:16px 18px; border-radius:var(--r-lg); background:linear-gradient(135deg,var(--accent-dim),rgba(139,122,232,.08));
+    border:1px solid rgba(58,79,184,.28); box-shadow:var(--sh-sm); }
+  .bd-cons h3{ margin:0 0 5px; font-size:15px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:9px; }
+  .bd-cons p{ margin:0; color:var(--text-secondary); font-size:13px; line-height:1.6; }
+  .bd-sprint{ margin:20px 0 0; }
+  .bd-sprint-step{ display:flex; gap:14px; align-items:flex-start; padding:14px 16px; border-radius:var(--r-md); background:var(--bg-overlay);
+    border:1px solid var(--border); margin-bottom:10px; box-shadow:var(--sh-sm); transition:border-color .16s; }
+  .bd-sprint-step.done{ border-left:3px solid var(--success); } .bd-sprint-step.next{ box-shadow:0 0 0 3px var(--accent-glow); border-color:rgba(58,79,184,.5); }
+  .bd-sprint-num{ flex:none; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font:700 13px var(--font-mono); color:#fff; background:var(--accent); }
+  .bd-sprint-step.done .bd-sprint-num{ background:var(--rag-green-dim); color:var(--success-hi); }
+  .bd-sprint-body{ flex:1; min-width:0; } .bd-sprint-body .sn{ font-size:14px; font-weight:700; color:var(--text-primary); }
+  .bd-sprint-body .sd{ font-size:12px; color:var(--text-muted); margin-top:2px; line-height:1.5; }
+  .bd-sprint-body .sw{ font:600 11px var(--font-label); color:var(--accent-lo); margin-top:5px; display:flex; gap:7px; align-items:center; }
+  .bd-sprint-body .sw .stg{ font:700 8.5px var(--font-label); letter-spacing:.1em; text-transform:uppercase; color:#fff; background:var(--text-faint); padding:3px 7px; border-radius:5px; }
+  .bd-excl{ margin:22px 0 0; } .bd-excl h4{ margin:0 0 10px; font:700 10.5px var(--font-label); letter-spacing:.16em; text-transform:uppercase; color:var(--text-faint); }
+  .bd-excl-row{ display:flex; gap:11px; align-items:flex-start; padding:11px 14px; border-radius:var(--r-md); background:var(--bg-surface); border:1px dashed var(--border-hi); margin-bottom:8px; }
+  .bd-excl-row .en{ font:700 12px var(--font-label); color:var(--text-secondary); flex:none; min-width:78px; }
+  .bd-excl-row .er{ font-size:12px; color:var(--text-muted); line-height:1.5; }
+  .bd-deploy{ margin:20px 0 0; padding:16px 18px; border-radius:var(--r-lg); background:var(--bg-raised); border:1px solid var(--border); }
+  .bd-deploy p{ margin:0 0 8px; font-size:13px; color:var(--text-secondary); line-height:1.55; } .bd-deploy p:last-child{ margin:0; } .bd-deploy code{ font:600 12px var(--font-mono); background:var(--bg-overlay); padding:2px 7px; border-radius:6px; border:1px solid var(--border); color:var(--accent-lo); }
+  .bd-history{ margin:26px 0 0; } .bd-hrow{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; padding:12px 16px; border-radius:var(--r-md); background:var(--bg-overlay); border:1px solid var(--border); margin-bottom:8px; box-shadow:var(--sh-sm); }
+  .bd-hrow .hs{ font:700 11px var(--font-label); color:#fff; background:var(--text-faint); padding:5px 10px; border-radius:7px; letter-spacing:.05em; }
+  .bd-hrow .hd{ display:flex; gap:5px; } .bd-hrow .hd i{ width:12px; height:12px; border-radius:4px; display:inline-block; }
+  .bd-hrow .hd i.green{ background:var(--rag-green); } .bd-hrow .hd i.amber{ background:var(--rag-amber); } .bd-hrow .hd i.red{ background:var(--rag-red); }
+  .bd-hrow .hgoal{ font-size:12px; color:var(--text-muted); } .bd-hrow .hgoal b.hit{ color:var(--success-hi); } .bd-hrow .hgoal b.miss{ color:var(--rag-red); } .bd-hrow .hgoal b.partial{ color:var(--warning); }
+  .bd-hrow .hnote{ flex-basis:100%; font-size:12px; color:var(--text-faint); font-style:italic; }
+  .bd-empty{ text-align:center; padding:46px 24px; }
+  .bd-empty h2{ font-family:var(--font-display); font-weight:400; font-size:30px; color:var(--text-primary); margin:0 0 8px; letter-spacing:-.01em; }
+  .bd-empty h2 em{ font-style:italic; color:var(--accent); }
+  .bd-empty p{ color:var(--text-muted); font-size:14px; max-width:560px; margin:0 auto 22px; line-height:1.65; }
+  .bd-dialrow{ display:flex; gap:9px; justify-content:center; flex-wrap:wrap; margin:0 auto 26px; max-width:640px; }
+  .bd-dialrow span{ font:700 11px var(--font-label); color:var(--text-secondary); background:var(--bg-overlay); border:1px solid var(--border); padding:8px 14px; border-radius:999px; box-shadow:var(--sh-sm); }
+  .bd-dialrow span.score{ color:var(--accent-lo); background:var(--accent-dim); border-color:rgba(58,79,184,.3); }
+
+  /* Wizard modal */
+  .bd-modal{ position:fixed; inset:0; z-index:60; display:none; align-items:flex-start; justify-content:center; padding:40px 18px;
+    background:rgba(11,14,46,.34); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); overflow-y:auto; }
+  .bd-modal.on{ display:flex; animation:fadeUp .3s var(--ease) both; }
+  .bd-card{ width:100%; max-width:600px; background:var(--bg-overlay); border:1px solid var(--border-hi); border-radius:var(--r-xl);
+    box-shadow:var(--sh-lg); overflow:hidden; margin:auto 0; }
+  .bd-card__head{ position:relative; padding:22px 26px 0; }
+  .bd-card__x{ position:absolute; top:16px; right:18px; width:30px; height:30px; border-radius:9px; border:1px solid var(--border); background:var(--bg-surface);
+    color:var(--text-faint); font-size:18px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .bd-card__x:hover{ color:var(--text-primary); border-color:var(--border-hi); }
+  .bd-eyebrow{ font:700 9.5px var(--font-label); letter-spacing:.16em; text-transform:uppercase; color:var(--accent-lo); margin:0 0 12px; }
+  .bd-prog{ display:flex; gap:5px; margin:0 0 4px; } .bd-prog i{ flex:1; height:4px; border-radius:2px; background:var(--bg-raised); transition:background .3s; } .bd-prog i.on{ background:var(--accent); } .bd-prog i.done{ background:var(--success); }
+  .bd-body{ padding:16px 26px 8px; }
+  .bd-q{ font-family:var(--font-display); font-weight:400; font-size:clamp(21px,3.2vw,27px); line-height:1.18; color:var(--text-primary); margin:0 0 10px; letter-spacing:-.01em; }
+  .bd-help{ font-size:12.5px; color:var(--text-muted); line-height:1.6; margin:0 0 16px; padding:11px 13px; background:var(--bg-surface); border:1px solid var(--border); border-radius:var(--r-sm); }
+  .bd-help b{ color:var(--text-secondary); }
+  .bd-choice{ display:flex; gap:9px; flex-wrap:wrap; margin:0 0 16px; }
+  .bd-choice button{ flex:1; min-width:120px; padding:13px 14px; border-radius:var(--r-md); border:1px solid var(--border); background:var(--bg-overlay); cursor:pointer;
+    text-align:left; transition:all .14s; box-shadow:var(--sh-sm); }
+  .bd-choice button:hover{ border-color:var(--border-hi); }
+  .bd-choice button.on{ border-color:var(--accent); background:var(--accent-dim); box-shadow:0 0 0 3px var(--accent-glow); }
+  .bd-choice .ct{ font:700 13.5px var(--font-body); color:var(--text-primary); display:block; }
+  .bd-choice .cs{ font-size:11.5px; color:var(--text-muted); margin-top:3px; display:block; line-height:1.45; }
+  .bd-fields{ display:flex; gap:12px; flex-wrap:wrap; margin:0 0 8px; }
+  .bd-field{ flex:1; min-width:130px; } .bd-field label{ display:block; font:700 10px var(--font-label); letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); margin:0 0 6px; }
+  .bd-field input{ width:100%; padding:13px 14px; border-radius:var(--r-md); background:var(--bg-surface); border:1px solid var(--border); color:var(--text-primary);
+    font:16px var(--font-body); outline:none; transition:all .15s; } .bd-field input:focus{ border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-glow); background:var(--bg-overlay); }
+  .bd-field .suffix{ font:600 11px var(--font-mono); color:var(--text-faint); margin-top:5px; display:block; }
+  .bd-note{ font-size:12px; color:var(--text-faint); line-height:1.5; margin:10px 0 0; }
+  .bd-note.warn{ color:var(--warning); }
+  .bd-foot{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 26px 22px; border-top:1px solid var(--border); margin-top:8px; }
+  .bd-back{ background:none; border:none; cursor:pointer; font:600 12.5px var(--font-body); color:var(--text-muted); padding:8px 4px; } .bd-back:hover{ color:var(--text-primary); } .bd-back[disabled]{ opacity:.35; cursor:default; }
+  .bd-btn{ cursor:pointer; font:700 13.5px var(--font-body); color:#fff; background:var(--accent); border:none; padding:12px 24px; border-radius:var(--r-md); box-shadow:0 4px 14px var(--accent-glow); transition:background .14s, transform .12s; }
+  .bd-btn:hover{ background:var(--accent-hi); transform:translateY(-1px); } .bd-btn.ghost{ color:var(--text-muted); background:var(--bg-overlay); border:1px solid var(--border); box-shadow:var(--sh-sm); } .bd-btn.ghost:hover{ color:var(--text-primary); }
+  /* Review + compare inside wizard */
+  .bd-rev-dial{ display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:var(--r-sm); background:var(--bg-surface); border:1px solid var(--border); margin-bottom:7px; }
+  .bd-rev-dial .rn{ font:700 12px var(--font-label); color:var(--text-secondary); flex:1; }
+  .bd-rev-dial .rv{ font:600 12px var(--font-mono); color:var(--text-muted); } .bd-rev-arrow{ color:var(--text-faint); }
+  .bd-move{ font:700 11px var(--font-label); } .bd-move.up{ color:var(--success-hi); } .bd-move.down{ color:var(--rag-red); } .bd-move.flat{ color:var(--text-faint); }
+  .bd-goaljudge{ display:flex; gap:9px; margin:14px 0; } .bd-goaljudge button{ flex:1; padding:11px; border-radius:var(--r-sm); border:1px solid var(--border); background:var(--bg-overlay); cursor:pointer; font:700 12.5px var(--font-body); color:var(--text-muted); }
+  .bd-goaljudge button.on{ color:#fff; border-color:transparent; } .bd-goaljudge button.on[data-v="hit"]{ background:var(--success); } .bd-goaljudge button.on[data-v="partial"]{ background:var(--warning); } .bd-goaljudge button.on[data-v="missed"]{ background:var(--rag-red); }
+  .bd-flat{ margin:14px 0 4px; padding:13px 15px; border-radius:var(--r-md); background:var(--rag-amber-dim); border:1px solid rgba(199,134,10,.3); }
+  .bd-flat p{ margin:0 0 9px; font-size:12.5px; color:var(--text-secondary); line-height:1.55; } .bd-flat b{ color:var(--warning); }
+  .bd-flat textarea{ width:100%; padding:10px 12px; border-radius:9px; background:var(--bg-overlay); border:1px solid var(--border); color:var(--text-primary); font:13px var(--font-body); outline:none; resize:vertical; } .bd-flat textarea:focus{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-glow); }
 </style>
 
 <div id="cc-status">Booting command center&hellip;</div>
@@ -457,12 +567,16 @@
   <div class="cc-wrap">
   <div class="cc-nav" id="cc-nav">
     <button data-sec="dash" class="on">Dashboard</button>
+    <button data-sec="dials"><span class="star">&#9733;</span>Business Dials</button>
     <button data-sec="aos"><span class="star">&#9733;</span>AOS Map</button>
     <button data-sec="play">Playbooks</button>
     <button data-sec="goal">Goal Roadmap</button>
     <button data-sec="all">All Skills</button>
     <button data-sec="outputs">Outputs</button>
   </div>
+
+  <!-- BUSINESS DIALS — five-dial sprint engine (onboarding hero); rendered by JS -->
+  <section id="sec-dials"><div id="bd-home"></div></section>
 
   <!-- AOS MAP — the company as a living tech-tree (per-client, output-driven) -->
   <section id="sec-aos">
@@ -586,6 +700,9 @@
   <div class="co-sheet-head"><h2 id="co-m-title">&nbsp;</h2><div class="co-x" id="co-m-close">&times;</div></div>
   <div class="co-sheet-body"><div class="co-doc" id="co-m-body"></div></div>
 </div></div>
+
+<!-- Business Dials wizard (Phases 1–6): built by JS into #bd-card -->
+<div class="bd-modal" id="bd-modal"><div class="bd-card" id="bd-card"></div></div>
 
 <script>
   const TOOL_AGENTS = "__ROCKSTAR_AGENTS_TOOL__";
@@ -1002,6 +1119,7 @@
     renderFilters(); renderBody(); applySearch(qVal());
     renderPlaybooks(); renderNote();
     renderAosMap();
+    if(typeof bdOnUsageChange==="function") bdOnUsageChange();
     if(USED_SIG!==lastRecSig){ lastRecSig=USED_SIG; loadRecs(); }
   }
 
@@ -1011,6 +1129,7 @@
     if(sec==="outputs" && !outputsLoaded) loadOutputs();
     if(sec==="outputs" && outputsLoaded) coRender();
     if(sec==="aos" && !aosReady) loadAosOutputs();
+    if(sec==="dials") bdRenderHome();
   };
   function setModeHint(){
     const h=document.getElementById("aos-modehint"); if(!h) return;
@@ -1157,7 +1276,434 @@
       status.style.display="none"; document.getElementById("cc").style.display="block";
       lastRecSig=USED_SIG; loadRecs();
       loadAosOutputs();     // AOS Map is the default tab — fetch deliverables to light it up
+      bdInit();             // Business Dials: render home + auto-open the wizard on first visit
     }catch(e){ status.textContent="Failed to load command center: "+(e&&e.message?e.message:e); }
   }
+  /* ══════════════════════════════════════════════════════════════════════════
+     BUSINESS DIALS — five-dial sprint engine (Phases 1–6), device-local.
+     Onboarding hero: ask a few real questions → derive RAG → pick the ONE
+     constraint → build a focused sprint of REAL catalog skills → deploy →
+     close & re-run with locked metrics. State mirrors shared_state.dials.
+     Lead gen · sales · delivery · finance are DRIVERS; revenue is the SCOREBOARD.
+     ═════════════════════════════════════════════════════════════════════════ */
+  const LS_DIALS = "cc_dials_v1";
+  const DIAL_KEYS = ["lead_gen","sales","delivery","finance","revenue"];
+  const DIAL_META = {
+    lead_gen:{ label:"Lead Gen", role:"Driver" },
+    sales:   { label:"Sales",    role:"Driver" },
+    delivery:{ label:"Delivery", role:"Driver" },
+    finance: { label:"Finance",  role:"Driver" },
+    revenue: { label:"Revenue",  role:"Scoreboard" },
+  };
+  // State is a MAP keyed by client (same clients as Outputs/AOS Map). BD_ALL[clientKey] = one
+  // operator's five-dial state. "self" = you (the primary client); others keyed by client id.
+  let BD_ALL={}, bdClient="self", bdClientsReady=false, DIALS=null;
+  function bdLoadAll(){ try{ const raw=JSON.parse(localStorage.getItem(LS_DIALS)||"null");
+    if(raw && raw.dials && raw.sprint){ BD_ALL={ self:raw }; }            // migrate a pre-client single state
+    else if(raw && typeof raw==="object"){ BD_ALL=raw; } else { BD_ALL={}; }
+  }catch(e){ BD_ALL={}; } }
+  function bdSyncCurrent(){ DIALS = BD_ALL[bdClient] || null; }
+  function bdSave(){ if(DIALS) BD_ALL[bdClient]=DIALS; else delete BD_ALL[bdClient];
+    try{ localStorage.setItem(LS_DIALS, JSON.stringify(BD_ALL)); }catch(e){} }
+  // clients come from my_outputs (shared with Outputs/AOS Map); "self" is always available.
+  function bdClientList(){ const cs=(OUTPUTS&&OUTPUTS.clients)||[]; const primary=cs.find(c=>c.isPrimary);
+    const list=[{ key:"self", label:primary?primary.name:"Myself", isPrimary:true }];
+    cs.filter(c=>!c.isPrimary).forEach(c=>list.push({ key:String(c.id), label:c.name, isPrimary:false }));
+    return list; }
+  function bdClientLabel(key){ const c=bdClientList().find(x=>x.key===key); return c?c.label:"Myself"; }
+  function bdDash(v){ return (v==null||v==="")?"&mdash;":esc(String(v)); }  // em-dash fallback, raw-HTML safe
+
+  // resolve a spec skill-slug against the LIVE catalog (never invent skills)
+  function bdResolve(slug){
+    if(!slug) return null;
+    if(byId[slug]) return byId[slug];
+    const n=norm(slug); if(!n) return null;
+    return SKILLS.find(x=>norm(x.skillId)===n) || SKILLS.find(x=>norm(x.name)===n)
+        || (n.length>=5 && (SKILLS.find(x=>norm(x.skillId).includes(n)) || SKILLS.find(x=>n.includes(norm(x.skillId))&&norm(x.skillId).length>=5))) || null;
+  }
+  // RAG -- not negotiable: green >= target, amber 60-99%, red < 60% or unmeasured
+  function bdNum(v){ if(v==null||v==="") return null; const m=String(v).replace(/[, ]/g,"").match(/-?\d+(\.\d+)?/); return m?parseFloat(m[0]):null; }
+  function bdRag(actual,target){ const a=bdNum(actual), t=bdNum(target);
+    if(a==null) return "red"; if(t==null||t<=0) return a>0?"green":"red";
+    const pct=a/t*100; return pct>=100?"green":pct>=60?"amber":"red"; }
+  function bdRatio(st,k){ const d=(st.dials[k])||{}; const a=bdNum(d.actual), t=bdNum(d.target); if(a==null) return -1; if(t==null||t<=0) return a>0?9:0; return a/t; }
+
+  // Phase 4 -- ordered skill pools per dial (foundation -> asset -> campaign)
+  const DIAL_PLANS = {
+    lead_gen:[
+      {stage:"Foundation", why:"Define who you're for before spending to reach them.", skills:["define-your-icp","target-market-agent","clarity-poll-agent"]},
+      {stage:"Positioning", why:"Sharpen the message so the right people lean in.", skills:["hooks-and-big-ideas","linkedin-profile-builder"]},
+      {stage:"Channel", why:"Pick where the qualified conversations will actually come from.", skills:["traffic-source-strategy"]},
+      {stage:"Assets", why:"Build the pages and sequences that turn attention into conversations.", skills:["landing-page-builder","email-sequence-builder","content-week-generator"]},
+      {stage:"Campaign", why:"Take it to market now the foundation underneath is set.", skills:["launch-sequence-builder","ad-suite-builder"]},
+      {stage:"Warm routes", why:"The fastest qualified conversations come through people, not ads.", skills:["partnership-engine","referral-outreach","partner-hunt","speaking-opportunity-finder"]},
+    ],
+    sales:[
+      {stage:"Foundation", why:"Fix the sales conversation itself before optimising assets.", skills:["client-discovery-call","sales-script-builder"]},
+      {stage:"Practice", why:"Rehearse the close so it lands live, not just on paper.", skills:["virtual-sales-coach","scenario-practice-copilot"]},
+      {stage:"Assets", why:"Give the pitch supporting assets that do some of the selling.", skills:["sales-page-builder","vsl-script-builder","conversion-pages-builder"]},
+      {stage:"High ticket", why:"Package and justify the premium engagement.", skills:["consulting-proposal-builder","roi-business-case","consultant-session-mastery"]},
+    ],
+    delivery:[
+      {stage:"Diagnose", why:"Map the work before you try to systemise it.", skills:["process-map-builder","company-workflow-agent"]},
+      {stage:"Systemise", why:"Turn the repeatable parts into SOPs and clean onboarding.", skills:["sop-creator","onboarding-brain-dump"]},
+      {stage:"Engagement", why:"Give the engagement a shape that ends in the promised result.", skills:["jumpstart-planner","pilot-sprint-planner","now-next-later-roadmap"]},
+      {stage:"Retain", why:"Convert reliable delivery into ongoing revenue.", skills:["retainer-architect"]},
+      {stage:"Repair", why:"Defuse the relationships that are already slipping.", skills:["conflict-resolution-agent"]},
+    ],
+    finance:[
+      {stage:"Diagnose", why:"See the real constraint in the numbers first.", skills:["cfo-coach"]},
+      {stage:"Price", why:"Fix the offer and ladder so margin has room to move.", skills:["offer-stack-designer","value-ladder-agent"]},
+      {stage:"Position value", why:"Make the value defensible so the price holds.", skills:["value-driver-mapper","signature-methodology"]},
+    ],
+  };
+
+  // constraint diagnosis (priority rules, in order); `st` is the state to read
+  function bdReds(st){ st=st||DIALS; return DIAL_KEYS.filter(k=>k!=="revenue" && st.dials[k] && st.dials[k].rag==="red"); }
+  function bdPickConstraint(st){ st=st||DIALS;
+    const d=st.dials, red=k=>d[k]&&d[k].rag==="red";
+    const leadsArriving = d.lead_gen && d.lead_gen.rag!=="red"; // leads not red => arriving
+    const order=[];
+    if(red("delivery")) order.push("delivery");                          // 1. delivery beats everything
+    if(red("sales") && leadsArriving) order.push("sales");               // 2. sales beats lead gen IF leads arriving
+    if(red("lead_gen")) order.push("lead_gen");                          // 3. lead gen when volume too low
+    if(red("sales") && !order.includes("sales")) order.push("sales");    //    sales red w/o leads sits below lead gen
+    if(red("finance")) order.push("finance");                            // 4. finance when binding
+    if(!order.length){                                                   // all amber/green (or only revenue red)
+      const worst=DIAL_KEYS.filter(k=>k!=="revenue").map(k=>({k,r:bdRatio(st,k)})).filter(x=>x.r>=0).sort((a,b)=>a.r-b.r)[0];
+      if(worst) order.push(worst.k);
+    }
+    return order;
+  }
+  function bdSprintSpec(st){ st=st||DIALS; const h=st.horizon; if(h===30) return {budget:3,maxDials:1}; if(h===60) return {budget:5,maxDials:2}; return {budget:7,maxDials:2}; }
+  function bdConstraintDials(st){ st=st||DIALS;
+    const order=bdPickConstraint(st), {maxDials}=bdSprintSpec(st);
+    let picks=order.slice(0,maxDials);
+    if(picks.length>1 && !(st.dials[picks[1]]&&st.dials[picks[1]].rag==="red")) picks=picks.slice(0,1);
+    return picks.length?picks:order.slice(0,1);
+  }
+  function bdBuildRoadmap(st, dialsSel){ st=st||DIALS;
+    const {budget}=bdSprintSpec(st), alloc={};
+    if(dialsSel.length===1){ alloc[dialsSel[0]]=budget; }
+    else { const primary=Math.ceil(budget*0.57); alloc[dialsSel[0]]=primary; alloc[dialsSel[1]]=budget-primary; }
+    const roadmap=[]; let pos=0;
+    dialsSel.forEach(dial=>{ let need=alloc[dial]||0;
+      for(const grp of (DIAL_PLANS[dial]||[])){
+        for(const slug of grp.skills){ if(need<=0) break;
+          const s=bdResolve(slug); if(!s || roadmap.some(r=>r.skillId===s.skillId)) continue;
+          roadmap.push({ skill:s.skillId, skillId:s.skillId, dial, position:++pos, status:"pending", stage:grp.stage, why:grp.why });
+          need--; }
+        if(need<=0) break; }
+    });
+    return roadmap;
+  }
+  function bdConstraintWhy(sel, st){ st=st||DIALS;
+    const primary=sel[0], L=DIAL_META;
+    const map={
+      delivery:"Delivery is the constraint: a leaky delivery system caps everything downstream, so we fix results and retention before pushing more volume in.",
+      sales:"Sales is the constraint: conversations are happening but too few are closing, so the fastest gain is converting the demand you already have, not buying more of it.",
+      lead_gen:"Lead gen is the constraint: there aren't enough qualified conversations to work with, and you can't practise closing deals you're not having.",
+      finance:"Finance is the constraint: margin or runway is the binding limit right now, so pricing and offer economics come before growth.",
+    };
+    let txt=map[primary]||("The constraint is "+(L[primary]?L[primary].label:primary)+".");
+    if(sel[1]) txt+=" We'll also touch "+L[sel[1]].label+" this sprint, but "+L[primary].label+" leads.";
+    if(st.dials.revenue && st.dials.revenue.rag==="red") txt+=" Revenue is red too, but that's the scoreboard, and the cause is here in "+L[primary].label+".";
+    return txt;
+  }
+  function bdExcludeWhy(k,sel){
+    if(sel.includes("delivery") && (k==="sales"||k==="lead_gen")) return "Not this sprint: selling into a delivery system that's failing just compounds the damage. Fix the bucket first.";
+    if(k==="lead_gen" && sel.includes("sales")) return "Not this sprint: conversations are arriving but not converting, so more leads is the expensive answer to the wrong problem.";
+    if(k==="finance") return "Real, but not the binding constraint this sprint; margin work waits until the pipeline above it holds.";
+    return "Deliberately parked so the sprint stays on the one constraint that unblocks the rest.";
+  }
+
+  // deliverable / position text for a roadmap entry
+  function bdProduces(s){ const d=(s.description||"").trim(); if(!d) return "Produces a ready-to-use deliverable."; return d.length>120?d.slice(0,117).trim()+"...":d; }
+  function bdEntryDone(r){ return !!(r && r.status==="done"); }   // per-client, stored in this client's roadmap
+  window.bdStepDone=function(pos,e){ if(e){e.preventDefault();e.stopPropagation();} if(!DIALS) return;
+    const r=(DIALS.roadmap||[]).find(x=>x.position===pos); if(r){ r.status=(r.status==="done")?"pending":"done"; bdSave(); bdRenderHome(); } };
+
+  /* STATE HOME (tab #sec-dials) */
+  function bdOnUsageChange(){ const sec=document.getElementById("sec-dials"); if(sec && sec.classList.contains("on")) bdRenderHome(); }
+  function bdRenderHome(){
+    const host=document.getElementById("bd-home"); if(!host) return;
+    const clients=bdClientList();
+    let bar="";
+    if(clients.length>1){ bar=`<div class="bd-clientbar"><span class="lbl">Client</span>`+
+      clients.map(c=>`<button class="cc-chip ${bdClient===c.key?"on":""}" data-ck="${attr(c.key)}">${esc(c.label)}${c.isPrimary?" (you)":""}</button>`).join("")+`</div>`; }
+    host.innerHTML = bar + (DIALS ? bdHomeBody() : bdEmptyHtml());
+    host.querySelectorAll(".bd-clientbar .cc-chip").forEach(ch=>ch.onclick=()=>{ bdClient=ch.getAttribute("data-ck"); bdSyncCurrent(); bdRenderHome(); });
+  }
+  function bdHomeBody(){
+    const d=DIALS.dials, sel=Array.isArray(DIALS.constraint)?DIALS.constraint:(DIALS.constraint?[DIALS.constraint]:[]);
+    const roadmap=DIALS.roadmap||[], done=roadmap.filter(bdEntryDone).length, allDone=roadmap.length>0 && done===roadmap.length;
+    const nextIdx=roadmap.findIndex(r=>!bdEntryDone(r));
+    let h=`<div class="bd-sprintbar">
+      <span class="tag">Sprint ${DIALS.sprint||1}</span>
+      <span class="tag" style="background:var(--text-secondary)">${DIALS.horizon||30}-day</span>
+      <span class="goal">Goal: <b>${DIALS.goal?esc(DIALS.goal):"&mdash;"}</b>${DIALS.goal_measurable===false?' <span style="color:var(--warning)">(not measurable &mdash; review is a judgement call)</span>':''}</span>
+      <span class="bd-actions">
+        <button class="cc-btn" onclick="bdStartRerun()">${allDone?"Close the sprint &amp; re-run":"Re-run the dials"}</button>
+        <button class="cc-btn" onclick="bdConfirmFresh()">Start fresh</button>
+      </span></div>`;
+    h+=`<div class="bd-dialgrid">`+DIAL_KEYS.map(k=>{
+      const x=d[k]||{}, rag=x.rag||"red", isC=sel.includes(k);
+      const tgt=(x.target==null||x.target==="")?"":"target "+esc(String(x.target));
+      return `<div class="bd-dial ${rag} ${isC?"constraint":""}">
+        <div class="bd-dial__top"><span class="bd-dial__name">${DIAL_META[k].label}${isC?' <span class="bd-dial__role" style="color:var(--accent-lo)">Constraint</span>':''}</span><span class="bd-pill ${rag}">${rag}</span></div>
+        <div class="bd-dial__nums"><span class="bd-dial__actual">${bdDash(x.actual)}</span><span class="bd-dial__target">${tgt}</span></div>
+        <div class="bd-dial__metric">${esc(x.metric||DIAL_META[k].role)}${x.unit?" &middot; "+esc(x.unit):""}</div>
+      </div>`;
+    }).join("")+`</div>`;
+    if(sel.length) h+=`<div class="bd-cons"><h3>&#127919; This sprint's constraint: ${sel.map(k=>DIAL_META[k].label).join(" + ")}</h3><p>${esc(bdConstraintWhy(sel))}</p></div>`;
+    if(roadmap.length){
+      h+=`<div class="bd-sprint"><div class="cc-section-title">The sprint &mdash; ${done}/${roadmap.length} done</div>`;
+      h+=roadmap.map((r,i)=>{ const s=bdResolve(r.skill||r.skillId); if(!s) return "";
+        const isDone=bdEntryDone(r), isNext=(i===nextIdx && !isDone);
+        return `<div class="bd-sprint-step ${isDone?"done":""} ${isNext?"next":""}">
+          <div class="bd-sprint-num">${isDone?"&#10003;":(i+1)}</div>
+          <div class="bd-sprint-body"><div class="sn">${esc(s.name)}</div><div class="sd">${esc(bdProduces(s))}</div>
+            <div class="sw"><span class="stg">${esc(r.stage||DIAL_META[r.dial].label)}</span>${esc(r.why||"")}</div></div>
+          <div class="bd-step-actions">
+            <a class="cc-start" href="${attr(startLink(s))}" onclick="ccStart('${attr(s.skillId)}')">${PLAY} ${isDone?"Run again":"Run"}</a>
+            <button class="cc-toggle" onclick="bdStepDone(${r.position},event)"><span class="box">${isDone?"&#10003;":""}</span>${isDone?"Done":"Mark done"}</button>
+          </div></div>`;
+      }).join("");
+      h+=`</div>`;
+      const first=nextIdx>=0?bdResolve(roadmap[nextIdx].skill):null;
+      h+=`<div class="bd-deploy">`;
+      if(allDone){ h+=`<p><b>All ${roadmap.length} done.</b> Say <b>close the sprint</b> and we re-run these dials to see what moved.</p><p>A dial that didn't move after a completed sprint is the most useful signal here &mdash; we'll ask why.</p>`; }
+      else if(first){ h+=`<p>Start with <code>Run ${esc(first.name)}</code> &mdash; one skill at a time, in order.</p><p>Each one produces something real; don't skip ahead &mdash; later ones read the earlier output.</p><p>When you've done all ${roadmap.length}, hit <b>Close the sprint &amp; re-run</b> above.</p>`; }
+      h+=`</div>`;
+    }
+    const excl=bdReds().filter(k=>!sel.includes(k));
+    if(excl.length){ h+=`<div class="bd-excl"><h4>Deliberately not this sprint</h4>`+
+      excl.map(k=>`<div class="bd-excl-row"><span class="en">${DIAL_META[k].label}</span><span class="er">${esc(bdExcludeWhy(k,sel))}</span></div>`).join("")+`</div>`; }
+    if((DIALS.history||[]).length){
+      h+=`<div class="bd-history"><div class="cc-section-title">Sprint history</div>`+
+        DIALS.history.slice().reverse().map(e=>{
+          const dots=DIAL_KEYS.map(k=>`<i class="${(e.dials&&e.dials[k])||"red"}" title="${DIAL_META[k].label}"></i>`).join("");
+          const gh=e.goal_hit||"", ghc=gh==="hit"?"hit":gh==="missed"?"miss":gh==="partial"?"partial":"";
+          return `<div class="bd-hrow"><span class="hs">Sprint ${e.sprint}</span><span class="hd">${dots}</span>
+            <span class="hgoal">Goal: <b class="${ghc}">${gh?esc(gh):"&mdash;"}</b> &middot; ${e.skills_completed||0}/${e.of||0} skills</span>
+            ${e.note?`<span class="hnote">"${esc(e.note)}"</span>`:""}</div>`;
+        }).join("")+`</div>`;
+    }
+    return h;
+  }
+  function bdEmptyHtml(){
+    const who = bdClient==="self" ? "your" : esc(bdClientLabel(bdClient))+"&rsquo;s";
+    return `<div class="bd-empty">
+      <h2>Five dials. Real numbers.<br>One <em>focused sprint</em>.</h2>
+      <p>Lead gen, sales, delivery and finance are the drivers; revenue is the scoreboard. Answer a few real questions and we'll find the one constraint holding you back &mdash; then hand you a short, ordered sprint of skills to move it. Re-run any time to see what changed.</p>
+      <div class="bd-dialrow"><span>Lead Gen</span><span>Sales</span><span>Delivery</span><span>Finance</span><span class="score">Revenue &middot; scoreboard</span></div>
+      <button class="bd-btn" onclick="bdStartIntake()">Start ${who} first sprint &rarr;</button>
+    </div>`;
+  }
+  // Start fresh = re-measure the dials for a new sprint (locked metrics + history kept -> non-destructive).
+  window.bdConfirmFresh=function(){ bdStartIntake(); };
+
+  /* WIZARD (Phases 1-2 intake, 3-5 review, 6 close/re-run) */
+  let bdMode="intake", bdSteps=[], bdIdx=0, bdDraft=null, bdClosing=null;
+  function bdSeedDials(){ const out={};
+    DIAL_KEYS.forEach(k=>{ const p=DIALS&&DIALS.dials&&DIALS.dials[k];
+      out[k]= p ? { metric:p.metric,unit:p.unit,definition:p.definition,form:p.form,shape:p.shape,choice:p.choice,currency:p.currency,actual:null,target:null,rag:null }
+                : { metric:null,unit:null,definition:null,form:null,shape:null,choice:null,currency:null,actual:null,target:null,rag:null }; });
+    return out; }
+  function bdFreshDraft(){ return { sprint:(DIALS&&DIALS.sprint)||1, horizon:(DIALS&&DIALS.horizon)||null, goal:"", goal_measurable:true,
+    assessed_on:null, constraint:[], dials:bdSeedDials(), roadmap:[], history:(DIALS&&DIALS.history)||[], goalJudge:null, closeNote:"" }; }
+  window.bdStartIntake=function(){ bdMode="intake"; bdDraft=bdFreshDraft(); bdClosing=null;
+    bdSteps=["p1_horizon","p1_goal","d_lead_gen","d_sales","d_delivery","d_finance","d_revenue","review"]; bdIdx=0; bdOpen(); };
+  window.bdStartRerun=function(){ if(!DIALS) return bdStartIntake(); bdMode="rerun";
+    bdClosing=JSON.parse(JSON.stringify(DIALS)); bdDraft=bdFreshDraft(); bdDraft.sprint=(DIALS.sprint||1)+1;
+    bdSteps=["d_lead_gen","d_sales","d_delivery","d_finance","d_revenue","compare","p1_horizon","p1_goal","review"]; bdIdx=0; bdOpen(); };
+  function bdOpen(){ document.getElementById("bd-modal").classList.add("on"); bdRenderStep(); }
+  window.bdClose=function(){ document.getElementById("bd-modal").classList.remove("on"); };
+
+  function bdField(id,label,val,suffix,ph){ return `<div class="bd-field"><label>${esc(label)}</label>
+    <input id="${id}" type="text" inputmode="decimal" autocomplete="off" value="${attr(val==null?"":val)}" placeholder="${attr(ph||"")}">
+    ${suffix?`<span class="suffix">${esc(suffix)}</span>`:""}</div>`; }
+
+  // per-dial question spec (uses locked metric on re-runs; offers choice on first run). q/help are RAW HTML.
+  function bdDialSpec(k){
+    const dd=bdDraft.dials[k], prev=DIALS&&DIALS.dials&&DIALS.dials[k], locked=!!(prev&&(prev.metric||prev.form||prev.shape||prev.choice));
+    if(k==="lead_gen") return { q:"How many qualified conversations did you have last month &mdash; and how many do you need?",
+      help:"<b>Qualified conversation</b> = a real prospect discussed their problem with you and could plausibly buy. Not a DM, a follower, or a newsletter signup.",
+      metric:"qualified conversations", unit:"per month", actualL:"Had last month", targetL:"Need per month", locked };
+    if(k==="sales"){ const leads=bdNum(bdDraft.dials.lead_gen.actual);
+      const form = locked ? (prev.form||"absolute") : (leads!=null?"relative":"absolute");
+      bdDraft.dials[k].form=form;
+      return form==="relative"
+        ? { q:`Of those ${leads} conversations, how many became paying clients &mdash; and what should that be?`, help:"Same window as lead gen, so the two dials line up.", metric:"clients closed (of qualified convos)", unit:"per month", actualL:"Became clients", targetL:"Should be", locked }
+        : { q:"How many new paying clients did you close last month &mdash; and what should that be?", help:"Absolute count &mdash; used because lead gen didn't produce a number to attach to.", metric:"new clients closed", unit:"per month", actualL:"Closed last month", targetL:"Should be", locked }; }
+    if(k==="delivery"){ const shape = locked ? (prev.shape||"finish") : (dd.shape||"finish"); dd.shape=shape;
+      return shape==="retain"
+        ? { q:"How many of the clients you had 90 days ago are still with you &mdash; and what should that be?", help:"Retention shape &mdash; for retainers or anything ongoing, there's no finish line.", metric:"clients retained (of 90 days ago)", unit:"clients", actualL:"Still with you", targetL:"Should be", locked, branch:"delivery" }
+        : { q:"What percentage of clients finish and get the result you promised &mdash; and what should it be?", help:"Completion shape &mdash; for engagements that end in a defined result.", metric:"% clients finish w/ result", unit:"%", actualL:"Actual %", targetL:"Target %", locked, branch:"delivery" }; }
+    if(k==="finance"){ const choice = locked ? (prev.choice||"margin") : (dd.choice||"margin"); dd.choice=choice;
+      return choice==="runway"
+        ? { q:"How many months of runway do you have &mdash; and what do you need?", help:"Runway = months you can operate at current burn before cash runs out.", metric:"months of runway", unit:"months", actualL:"Months now", targetL:"Months needed", locked, branch:"finance" }
+        : { q:"What's your gross margin right now &mdash; and what should it be?", help:"Gross margin % = (revenue &minus; cost of delivery) &divide; revenue.", metric:"gross margin %", unit:"%", actualL:"Actual %", targetL:"Target %", locked, branch:"finance" }; }
+    // revenue
+    return { q:"What was last month's revenue &mdash; and what's the target?", help:"The scoreboard. We never build a workstream for revenue &mdash; if it's red, the cause is in a driver dial.", metric:"revenue", unit:(dd.currency||"$")+" / month", actualL:"Last month", targetL:"Target", locked, currency:true };
+  }
+
+  function bdProg(){ const total=bdSteps.length; return `<div class="bd-prog">`+bdSteps.map((s,i)=>`<i class="${i<bdIdx?"done":i===bdIdx?"on":""}"></i>`).join("")+`</div>`; }
+  function bdRenderStep(){
+    const step=bdSteps[bdIdx], card=document.getElementById("bd-card");
+    let eyebrow="Business Dials", body="", footPrimary="Continue", canBack=bdIdx>0;
+    if(step==="p1_horizon"){ eyebrow="Phase 1 &middot; Goal &amp; horizon";
+      body=`<h2 class="bd-q">What are you working toward &mdash; and by when?</h2>
+        <p class="bd-help">Pick the horizon. It sets the size of the sprint: 30 days is tight and focused, 90 days is a bigger build.</p>
+        <div class="bd-choice" id="bd-hz">
+          ${[[30,"One dial, 3 skills"],[60,"1&ndash;2 dials, 5 skills"],[90,"2 dials, 7 skills"]].map(([v,s])=>`<button data-v="${v}" class="${bdDraft.horizon===v?"on":""}"><span class="ct">${v} days</span><span class="cs">${s}</span></button>`).join("")}
+        </div>`;
+    } else if(step==="p1_goal"){ eyebrow="Phase 1 &middot; Goal &amp; horizon";
+      body=`<h2 class="bd-q">What does done look like &mdash; in a number?</h2>
+        <p class="bd-help">Revenue, clients, leads, launched &mdash; whatever the real measure is. A goal without a number can't be scored when the sprint closes.</p>
+        <div class="bd-field"><label>The goal</label><input id="bd-goal" type="text" autocomplete="off" value="${attr(bdDraft.goal||"")}" placeholder="e.g. 5 new retainer clients"></div>
+        <p class="bd-note" id="bd-goal-note"></p>`;
+    } else if(step && step.indexOf("d_")===0){
+      const k=step.slice(2), sp=bdDialSpec(k); eyebrow="Phase 2 &middot; "+DIAL_META[k].label+(DIAL_META[k].role==="Scoreboard"?" (scoreboard)":" dial");
+      let branch="";
+      if(sp.branch && !sp.locked){
+        const opts = sp.branch==="delivery" ? [["finish","Engagements that finish","Ends in a defined result"],["retain","Ongoing / retainer","No finish line &mdash; measure retention"]]
+                                            : [["margin","Gross margin","Profit per dollar of revenue"],["runway","Months of runway","Cash before you run out"]];
+        const cur = sp.branch==="delivery" ? bdDraft.dials[k].shape : bdDraft.dials[k].choice;
+        branch=`<p class="bd-note" style="margin-bottom:8px">First run &mdash; lock this once so every re-run counts the same thing:</p>
+          <div class="bd-choice" id="bd-branch" data-branch="${sp.branch}">`+opts.map(([v,t,s])=>`<button data-v="${v}" class="${cur===v?"on":""}"><span class="ct">${t}</span><span class="cs">${s}</span></button>`).join("")+`</div>`;
+      }
+      body=`<h2 class="bd-q">${sp.q}</h2><p class="bd-help">${sp.help}</p>${branch}
+        ${sp.currency&&!sp.locked?`<div class="bd-fields">${bdField("bd-cur","Currency","$","","$")}</div>`:""}
+        <div class="bd-fields">${bdField("bd-actual",sp.actualL,bdDraft.dials[k].actual,sp.unit)}${bdField("bd-target",sp.targetL,bdDraft.dials[k].target,sp.unit)}</div>
+        <p class="bd-note">No number is fine &mdash; but an unmeasured dial is <b>red</b> until you have one. You can't manage what you're not counting.</p>`;
+    } else if(step==="compare"){ eyebrow="Phase 6 &middot; Close &amp; re-run"; footPrimary="Log this sprint &rarr;";
+      body=bdCompareBody();
+    } else if(step==="review"){ eyebrow="Phase 3&ndash;5 &middot; Constraint, roadmap &amp; deploy"; footPrimary="Start the sprint &rarr;";
+      body=bdReviewBody();
+    }
+    const showClient = bdClientList().length>1;
+    card.innerHTML=`<div class="bd-card__head"><button class="bd-card__x" onclick="bdClose()" title="Close">&times;</button>
+        <p class="bd-eyebrow">${eyebrow}</p>${bdProg()}
+        ${showClient?`<p class="bd-forclient">Client: <b>${esc(bdClientLabel(bdClient))}</b></p>`:""}</div>
+      <div class="bd-body">${body}</div>
+      <div class="bd-foot"><button class="bd-back" onclick="bdPrev()" ${canBack?"":"disabled"}>&larr; Back</button>
+        <button class="bd-btn" onclick="bdNext()">${footPrimary}</button></div>`;
+    bdWire(step);
+  }
+  function bdWire(step){
+    if(step==="p1_horizon"){ document.querySelectorAll("#bd-hz button").forEach(b=>b.onclick=()=>{ bdDraft.horizon=parseInt(b.getAttribute("data-v"),10);
+      document.querySelectorAll("#bd-hz button").forEach(x=>x.classList.toggle("on",x===b)); }); }
+    if(step==="p1_goal"){ const inp=document.getElementById("bd-goal"), note=document.getElementById("bd-goal-note");
+      const upd=()=>{ const has=/\d/.test(inp.value); note.textContent=has||!inp.value.trim()?"":"No number yet - give me one, or continue and the close review becomes a judgement call rather than a score."; note.className="bd-note"+(has||!inp.value.trim()?"":" warn"); };
+      inp.addEventListener("input",upd); upd(); setTimeout(()=>inp.focus(),40); }
+    if(step && step.indexOf("d_")===0){
+      const k=step.slice(2);
+      const br=document.getElementById("bd-branch");
+      if(br){ br.querySelectorAll("button").forEach(b=>b.onclick=()=>{ const v=b.getAttribute("data-v"), which=br.getAttribute("data-branch");
+        if(which==="delivery") bdDraft.dials[k].shape=v; else bdDraft.dials[k].choice=v;
+        bdCapture(step); bdRenderStep(); }); }
+      setTimeout(()=>{ const a=document.getElementById("bd-actual"); if(a) a.focus(); },40);
+    }
+    if(step==="compare"){ const j=document.getElementById("bd-judge"); if(j) j.querySelectorAll("button").forEach(b=>b.onclick=()=>{ bdDraft.goalJudge=b.getAttribute("data-v"); j.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b)); }); }
+  }
+  function bdCapture(step){
+    if(step==="p1_horizon") return;
+    if(step==="p1_goal"){ const inp=document.getElementById("bd-goal"); if(inp){ bdDraft.goal=inp.value.trim(); bdDraft.goal_measurable=/\d/.test(inp.value); } return; }
+    if(step && step.indexOf("d_")===0){ const k=step.slice(2), sp=bdDialSpec(k);
+      const a=document.getElementById("bd-actual"), t=document.getElementById("bd-target"), cur=document.getElementById("bd-cur");
+      const dd=bdDraft.dials[k];
+      if(a) dd.actual=a.value.trim(); if(t) dd.target=t.value.trim();
+      if(cur) dd.currency=cur.value.trim()||"$";
+      dd.metric=sp.metric; dd.unit=(k==="revenue")?((dd.currency||"$")+" / month"):sp.unit;
+      if(k==="revenue"&&!dd.currency) dd.currency="$";
+      return; }
+    if(step==="compare"){ const n=document.getElementById("bd-closenote"); if(n) bdDraft.closeNote=n.value.trim(); return; }
+  }
+  window.bdPrev=function(){ bdCapture(bdSteps[bdIdx]); if(bdIdx>0){ bdIdx--; bdRenderStep(); } };
+  window.bdNext=function(){
+    const step=bdSteps[bdIdx]; bdCapture(step);
+    if(step==="p1_horizon" && !bdDraft.horizon){ toast("Pick a horizon"); return; }
+    if(step==="p1_goal" && !bdDraft.goal){ toast("Name the goal"); return; }
+    if(step==="compare"){ bdDoClose(); }
+    if(bdIdx<bdSteps.length-1){ bdIdx++; bdRenderStep(); return; }
+    bdCommit();
+  };
+
+  // Phase 3-4: finalize RAG + constraint + roadmap for the review screen
+  function bdFinalizeRag(dm){ DIAL_KEYS.forEach(k=>{ const x=dm[k]; x.rag=bdRag(x.actual,x.target); }); }
+  function bdReviewBody(){
+    bdFinalizeRag(bdDraft.dials);
+    const sel=bdConstraintDials(bdDraft); const roadmap=bdBuildRoadmap(bdDraft, sel);
+    bdDraft.constraint=sel; bdDraft.roadmap=roadmap; bdDraft._preview=true;
+    const first=roadmap[0]?bdResolve(roadmap[0].skill):null;
+    let h=`<h2 class="bd-q">Your constraint is ${sel.map(k=>DIAL_META[k].label).join(" + ")}.</h2>
+      <p class="bd-help">${esc(bdConstraintWhy(sel, bdDraft))} <b>Agree before you build</b> &mdash; the diagnosis is the point.</p>`;
+    h+=`<div style="margin:4px 0 10px">`+DIAL_KEYS.map(k=>{ const x=bdDraft.dials[k];
+      return `<div class="bd-rev-dial"><span class="rn">${DIAL_META[k].label}</span><span class="rv">${bdDash(x.actual)}${x.target?" / "+esc(String(x.target)):""}</span><span class="bd-pill ${x.rag}">${x.rag}</span></div>`;
+    }).join("")+`</div>`;
+    if(roadmap.length){
+      h+=`<div class="cc-section-title" style="margin-top:14px">Sprint ${bdDraft.sprint} &mdash; ${sel.map(k=>DIAL_META[k].label).join(" + ")} &middot; ${roadmap.length} skills</div>`;
+      h+=roadmap.map((r,i)=>{ const s=bdResolve(r.skill); if(!s) return "";
+        return `<div class="bd-sprint-step"><div class="bd-sprint-num">${i+1}</div><div class="bd-sprint-body"><div class="sn">${esc(s.name)}</div><div class="sd">${esc(bdProduces(s))}</div><div class="sw"><span class="stg">${esc(r.stage)}</span>${esc(r.why)}</div></div></div>`;
+      }).join("");
+    } else { h+=`<p class="bd-note warn">None of the spec's skills for this dial are in your live catalog &mdash; try a different horizon or check the catalog.</p>`; }
+    const excl=DIAL_KEYS.filter(k=>k!=="revenue"&&bdDraft.dials[k].rag==="red"&&!sel.includes(k));
+    if(excl.length) h+=`<div class="bd-excl"><h4>Deliberately not this sprint</h4>`+excl.map(k=>`<div class="bd-excl-row"><span class="en">${DIAL_META[k].label}</span><span class="er">${esc(bdExcludeWhy(k,sel))}</span></div>`).join("")+`</div>`;
+    if(first) h+=`<div class="bd-deploy"><p>On <b>Start the sprint</b> you'll land on your dials home. Then: <code>Run ${esc(first.name)}</code> &mdash; one skill at a time, in order.</p><p>Each produces something real; later skills read the earlier output, so don't skip ahead.</p></div>`;
+    return h;
+  }
+  function bdCompareBody(){
+    bdFinalizeRag(bdDraft.dials);
+    const oldD=bdClosing.dials, newD=bdDraft.dials;
+    let h=`<h2 class="bd-q">Sprint ${bdClosing.sprint} &mdash; what moved?</h2>
+      <p class="bd-help">Same five questions, the same locked metrics. Here's the honest before / after.</p>`;
+    h+=DIAL_KEYS.map(k=>{ const o=oldD[k]||{}, n=newD[k]||{};
+      const ov=bdNum(o.actual), nv=bdNum(n.actual);
+      let mv="flat", arrow="&rarr;"; if(ov!=null&&nv!=null){ if(nv>ov){mv="up";arrow="&uarr;";} else if(nv<ov){mv="down";arrow="&darr;";} }
+      return `<div class="bd-rev-dial"><span class="rn">${DIAL_META[k].label}</span>
+        <span class="rv">${bdDash(o.actual)}</span><span class="bd-rev-arrow">&rarr;</span>
+        <span class="rv">${bdDash(n.actual)}</span>
+        <span class="bd-pill ${n.rag}">${n.rag}</span><span class="bd-move ${mv}">${arrow}</span></div>`;
+    }).join("");
+    h+=`<p class="bd-note" style="margin-top:14px">Goal was: <b>${bdClosing.goal?esc(bdClosing.goal):"&mdash;"}</b>. How did it land?</p>
+      <div class="bd-goaljudge" id="bd-judge">${[["hit","Hit"],["partial","Partial"],["missed","Missed"]].map(([v,t])=>`<button data-v="${v}" class="${bdDraft.goalJudge===v?"on":""}">${t}</button>`).join("")}</div>`;
+    const constraintDials=Array.isArray(bdClosing.constraint)?bdClosing.constraint:[bdClosing.constraint].filter(Boolean);
+    const workDone=(bdClosing.roadmap||[]).filter(bdEntryDone).length;
+    const flat=constraintDials.some(k=>{ const ov=bdNum(oldD[k]&&oldD[k].actual), nv=bdNum(newD[k]&&newD[k].actual); return ov!=null&&nv!=null&&nv<=ov; });
+    if(flat && workDone>0){ h+=`<div class="bd-flat"><p><b>The constraint dial didn't move</b>, even though you completed ${workDone} skill${workDone===1?"":"s"}. That's the most valuable signal here &mdash; a flat dial after a done sprint usually means the diagnosis was wrong, there wasn't enough time, or the artifact never actually got used. Which was it?</p><textarea id="bd-closenote" rows="2" placeholder="Why didn't it move?">${esc(bdDraft.closeNote||"")}</textarea></div>`; }
+    else { h+=`<div style="margin-top:6px"><p class="bd-note">Anything worth recording about this sprint? (optional)</p><textarea id="bd-closenote" class="bd-flat" style="width:100%;padding:10px 12px;border-radius:9px;background:var(--bg-overlay);border:1px solid var(--border);font:13px var(--font-body)" rows="2" placeholder="Notes for the record...">${esc(bdDraft.closeNote||"")}</textarea></div>`; }
+    return h;
+  }
+  function bdDoClose(){
+    bdFinalizeRag(bdDraft.dials);
+    const snap={}; DIAL_KEYS.forEach(k=>snap[k]=bdDraft.dials[k].rag);
+    const roadmap=bdClosing.roadmap||[];
+    const entry={ sprint:bdClosing.sprint, closed:Date.now(), dials:snap,
+      goal_hit:bdDraft.goalJudge||(bdClosing.goal_measurable===false?"judgement":""),
+      skills_completed:roadmap.filter(bdEntryDone).length, of:roadmap.length, note:bdDraft.closeNote||"" };
+    bdDraft.history=(bdClosing.history||[]).concat([entry]);   // never rewrite past sprints
+  }
+  function bdCommit(){
+    bdFinalizeRag(bdDraft.dials);
+    const sel=bdConstraintDials(bdDraft);
+    bdDraft.constraint=sel; bdDraft.roadmap=bdBuildRoadmap(bdDraft, sel);
+    bdDraft.assessed_on=Date.now(); delete bdDraft._preview;
+    DIALS=bdDraft; bdSave();
+    bdClose(); ccGo("dials"); bdRenderHome();
+    toast(bdMode==="rerun"?"Sprint "+DIALS.sprint+" is live":"Your sprint is live - run the first skill");
+  }
+
+  // first-run auto-open + tab paint (per client; clients come from my_outputs)
+  async function bdInit(){
+    bdLoadAll(); bdClient="self"; bdSyncCurrent(); bdRenderHome();   // instant paint (self)
+    try{ await ensureOutputs(); }catch(e){}
+    bdClientsReady=true; bdRenderHome();                             // repaint with the client selector
+    if(Object.keys(BD_ALL).length===0 && !localStorage.getItem("cc_onboarded_v1")){
+      try{ localStorage.setItem("cc_onboarded_v1","1"); }catch(e){}
+      bdStartIntake();
+    }
+  }
+
   load();
 </script>

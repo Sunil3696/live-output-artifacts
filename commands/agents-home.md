@@ -24,7 +24,14 @@ as a live tech-tree built from the real skill catalog, laid out as an ordered
 Foundation → Offer → Marketing → Lead Gen → Sales → Delivery → Ops & AI journey, scoped by a
 **client selector** and driven by `my_outputs`: a node lights up **Shipped** when a
 deliverable exists for that skill+client, with **Available / Locked** progression, a
-**Next best action** banner, and a **Build / Run** toggle. The rest: **Dashboard**
+**Next best action** banner, and a **Build / Run** toggle. **Business Dials** is the
+first-run onboarding: a wizard auto-opens for new users (and stays as a tab) that asks goal +
+horizon and the five dials (lead gen / sales / delivery / finance / revenue actual-vs-target),
+derives a RAG rating, picks the one binding constraint, and builds a focused 3/5/7-skill sprint
+of real catalog skills with Run buttons — then re-runs the dials on close with locked metrics
+and keeps an immutable sprint history. It is **per-client** (same client selector as Outputs /
+AOS Map), so each client gets its own dials, sprint and history (device-local, `cc_dials_v1`
+keyed by client). The rest: **Dashboard**
 (completion ring, AI "Your next move", activity heatmap + streak, Pinned, Continue),
 **Playbooks** (guided multi-skill sequences), **Goal Roadmap** (type a goal, the AI builds
 an ordered path), **All Skills** (search, filter, launch, favorites, per-skill notes + output
