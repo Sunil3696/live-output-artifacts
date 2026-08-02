@@ -39,11 +39,13 @@ Argument (optional): `$ARGUMENTS`
      text and dark inputs.
    - Orchestrator **returns** a result → render `templates/inline-result.html`; its
      "Save as live page" action promotes the result to a live Cowork artifact.
-5. **Thread the session.** When the widget sends "Here are my answers …" / "Let's work on
-   …" / "Please refine this …", re-attach the session id and call the orchestrator again.
-   On "Save this as a live page", build the live Cowork artifact (skill's main flow). On
-   "Cancel that", stop cleanly. These are natural messages, not command codes — read
-   intent from the widget on screen, don't expect a prefix.
+5. **Thread the session — pass input straight through.** The widget sends exactly what's
+   in it (the picked label, the answers as typed, the refine note, or a plain "Save as
+   live page" / "Run again" / "Cancel"). Forward it to the orchestrator immediately with
+   the session id re-attached — NO preamble, do not restate or rewrite the user's input,
+   keep prose to one short line, then render the next widget. On "Save as live page",
+   build the live Cowork artifact (skill's main flow). On "Cancel", stop cleanly. Read
+   intent from the widget on screen, not from any prefix.
 
 Keep chat prose to one line — the widget is the message. Strip orchestrator scaffolding
 (`ORCHESTRATOR_SESSION`, "call the tool again…") from anything the user sees. If the

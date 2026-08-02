@@ -10,11 +10,11 @@
           {{RESULT_BODY}} — the actual rendered output. For JSON, drop a small table
           or key/value list; for markdown/text, an escaped block; for HTML, inject it.
           Keep it readable — this card IS the message, so your prose stays one line.
-       3. The action row promotes the result to your other rendering paths (natural
-          messages, no machine prefix — they read like the user typed them):
-          • "Save as live page" → "Save this as a live page"  (build the LIVE Cowork
-            artifact via the render-live-artifact Cowork flow — the durable, reopenable
-            page). This is the "add alongside" bridge: inline first, live page on demand.
+       3. The action row sends exactly the button's own label ("Save as live page",
+          "Run again") or, for Refine, the note typed verbatim — no rewriting, no prefix:
+          • "Save as live page" → build the LIVE Cowork artifact via the
+            render-live-artifact Cowork flow (the durable, reopenable page). This is the
+            "add alongside" bridge: inline first, live page on demand.
           • "Run again" / "Refine" continue the SAME orchestrator session.
 
      THEME + HOST NOTE: fixed MyGentic light/paper palette (matches the command
@@ -58,8 +58,8 @@
   <input type="text" id="ir-refine-input" class="ir-refine" placeholder="What should change? Press Enter to send…" />
 
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:15px">
-    <div class="mg-act mg-primary" role="button" tabindex="0" style="flex:1;min-width:180px" onclick="sendPrompt('Save this as a live page')"><i class="ti ti-external-link" aria-hidden="true"></i> Save as live page</div>
-    <div class="mg-act" role="button" tabindex="0" onclick="sendPrompt('Run that again')"><i class="ti ti-refresh" aria-hidden="true" style="font-size:15px"></i> Run again</div>
+    <div class="mg-act mg-primary" role="button" tabindex="0" style="flex:1;min-width:180px" onclick="sendPrompt('Save as live page')"><i class="ti ti-external-link" aria-hidden="true"></i> Save as live page</div>
+    <div class="mg-act" role="button" tabindex="0" onclick="sendPrompt('Run again')"><i class="ti ti-refresh" aria-hidden="true" style="font-size:15px"></i> Run again</div>
     <div class="mg-act" id="ir-refine-btn" role="button" tabindex="0"><i class="ti ti-wand" aria-hidden="true" style="font-size:15px"></i> Refine</div>
   </div>
 </div>
@@ -68,11 +68,11 @@
   var inp=document.getElementById('ir-refine-input'), btn=document.getElementById('ir-refine-btn');
   function toggleRefine(){
     if(inp.style.display!=='block'){inp.style.display='block';inp.focus();return;}
-    var v=(inp.value||'').trim(); if(v){sendPrompt('Please refine this — '+v);}
+    var v=(inp.value||'').trim(); if(v){sendPrompt(v);}
   }
   btn.addEventListener('click',toggleRefine);
   inp.addEventListener('keydown',function(e){
-    if(e.key==='Enter'){var v=(inp.value||'').trim(); if(v){sendPrompt('Please refine this — '+v);}}
+    if(e.key==='Enter'){var v=(inp.value||'').trim(); if(v){sendPrompt(v);}}
   });
   [].slice.call(document.querySelectorAll('.mg-act')).forEach(function(el){
     el.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });

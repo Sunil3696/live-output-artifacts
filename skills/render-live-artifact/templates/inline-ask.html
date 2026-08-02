@@ -14,10 +14,11 @@
        3. Fill every {{...}} token. Repeat the .ia-block per question. Pre-fill
           each field's value with your best draft from context when you have one
           (the user edits instead of composing from blank); leave empty otherwise.
-       4. On submit the widget bundles every answer into ONE natural chat message:
-          "Here are my answers — 1) … · 2) … · …"  — you then thread the answers back
-          to the SAME orchestrator session in a single tool call. (No machine prefix:
-          the message must read like the user typed it.)
+       4. On submit the widget sends the user's answers VERBATIM — one per line, in
+          question order, exactly as typed, with no prefix or rewriting. You then map
+          them to the questions you asked and thread them back to the SAME orchestrator
+          session in a single tool call (references/inline-widgets.md § Pass it
+          straight through).
 
      THEME + HOST NOTE: fixed MyGentic light/paper palette (matches the command
      centre). The visualize host FORCE-STYLES real form controls to its own theme,
@@ -68,8 +69,8 @@
   </div>
   <div style="border-top:1px solid var(--bd);padding-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
     <span style="font:400 11px var(--f-body);color:var(--faint);flex:1">Editing is free — only Send costs a message</span>
-    <div class="mg-act" role="button" tabindex="0" onclick="sendPrompt('Skip this step')"><i class="ti ti-player-skip-forward" aria-hidden="true" style="font-size:15px"></i> Skip</div>
-    <div class="mg-act" role="button" tabindex="0" onclick="sendPrompt('Cancel that')"><i class="ti ti-x" aria-hidden="true" style="font-size:15px"></i> Cancel</div>
+    <div class="mg-act" role="button" tabindex="0" onclick="sendPrompt('Skip')"><i class="ti ti-player-skip-forward" aria-hidden="true" style="font-size:15px"></i> Skip</div>
+    <div class="mg-act" role="button" tabindex="0" onclick="sendPrompt('Cancel')"><i class="ti ti-x" aria-hidden="true" style="font-size:15px"></i> Cancel</div>
   </div>
 </div>
 <script>
@@ -84,9 +85,10 @@
   }
   function submit(){
     if(!ready()) return;
+    // send the answers exactly as typed — one per line, in question order, no rewriting
     var parts=qs.sort(function(a,b){return +a.dataset.q-+b.dataset.q;})
-      .map(function(q){return q.dataset.q+') '+(q.value||'').trim().replace(/\s+/g,' ');});
-    sendPrompt('Here are my answers — '+parts.join('  ·  '));
+      .map(function(q){return (q.value||'').trim().replace(/\s+/g,' ');});
+    sendPrompt(parts.join('\n'));
   }
   qs.forEach(function(q){q.addEventListener('input',upd);}); upd();
   send.addEventListener('click',submit);

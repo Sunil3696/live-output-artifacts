@@ -9,18 +9,19 @@
        1. Copy this body into `show_widget` (widget_code). Already show_widget-ready.
        2. Fill {{ORCH_NAME}}, {{PROMPT}} (one-line question/subtitle).
        3. Repeat the .mg-opt row once per option. Put the option's REAL name as the
-          visible label AND inside the onclick sendPrompt. Send the NAME in a natural
-          sentence ("Let's work on Acme"), never the number — the number is UI, not
-          data, and the message must read like the user typed it. Give the user's own
-          record the `mg-opt--you` class + ti-user-star icon; others use ti-user.
-       4. Keep the "add new" input only if the orchestrator allows a new entry; its
-          Enter sends "Let's set up a new client: <name>". Otherwise delete it.
+          visible label. Give the user's own record the `mg-opt--you` class +
+          ti-user-star icon; others use ti-user.
+       4. Keep the "add new" input only if the orchestrator allows a new entry.
+
+     WHAT IT SENDS: exactly what's in the widget — clicking a row sends that row's
+     LABEL verbatim (e.g. "aruna"); the add-new input sends the typed name verbatim;
+     Cancel sends "Cancel". No rewriting, no prefix. Claude forwards it straight to
+     the orchestrator (see references/inline-widgets.md § Pass it straight through).
 
      WHY OPTIONS ARE <div>, NOT <button>: the visualize host FORCE-STYLES real form
-     controls (button/input/textarea) to its own light/dark theme, which overrides
-     class styles — that makes button text invisible on a light card. Plain divs are
-     not themed, so they honour our palette. The one real <input> below is forced
-     back with !important. NEVER use host CSS variables (--surface-*, --text-*). -->
+     controls, which overrides class styles and makes button text invisible on a
+     light card. Plain divs are not themed. The one real <input> is forced back with
+     !important. NEVER use host CSS variables (--surface-*, --text-*). -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;700&family=Plus+Jakarta+Sans:wght@500;700&display=swap');
 .mg-choice{--paper:#fff;--base:#f4f7fb;--raised:#eef2f8;--bd:rgba(11,14,46,.10);--ink:#0b0e2e;--ink2:#242b5c;--muted:#4a5578;--faint:#8a93b0;--accent:#3A4FB8;--f-disp:"Instrument Serif",Georgia,serif;--f-body:"Inter",-apple-system,system-ui,sans-serif;--f-lbl:"Plus Jakarta Sans","Inter",sans-serif;background:var(--paper);border:1px solid var(--bd);border-radius:17px;padding:18px 20px;box-shadow:0 8px 24px rgba(11,14,46,.06);font-family:var(--f-body);color:var(--ink)}
@@ -33,7 +34,6 @@
 .mg-opt:hover,.mg-opt:focus{border-color:var(--accent);background:#fff;outline:none}
 .mg-opt i{font-size:16px;color:var(--accent);flex:none}
 .mg-opt--you{color:var(--accent);font-weight:500}
-/* the one real form control — force past the host's pre-styling */
 .mg-choice input.mg-new{width:100%;font:400 13px var(--f-body)!important;color:var(--ink)!important;-webkit-text-fill-color:var(--ink)!important;background:var(--base)!important;border:1px solid var(--bd)!important;border-radius:9px!important;padding:10px 12px!important}
 .mg-choice input.mg-new::placeholder{color:var(--faint)!important;-webkit-text-fill-color:var(--faint)!important;opacity:1}
 .mg-choice input.mg-new:focus{outline:none!important;border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(58,79,184,.12)!important}
@@ -48,10 +48,10 @@
   <p class="mg-sub">{{PROMPT}}</p>
 
   <div class="mg-list">
-    <!-- ── repeat one .mg-opt per option; label + onclick both carry the NAME ── -->
-    <div class="mg-opt mg-opt--you" role="button" tabindex="0" onclick="sendPrompt(&quot;Let's work on {{OPTION_1}}&quot;)"><i class="ti ti-user-star" aria-hidden="true"></i> {{OPTION_1}}</div>
-    <div class="mg-opt" role="button" tabindex="0" onclick="sendPrompt(&quot;Let's work on {{OPTION_2}}&quot;)"><i class="ti ti-user" aria-hidden="true"></i> {{OPTION_2}}</div>
-    <div class="mg-opt" role="button" tabindex="0" onclick="sendPrompt(&quot;Let's work on {{OPTION_3}}&quot;)"><i class="ti ti-user" aria-hidden="true"></i> {{OPTION_3}}</div>
+    <!-- ── repeat one .mg-opt per option; the visible label IS the value that gets sent ── -->
+    <div class="mg-opt mg-opt--you" role="button" tabindex="0"><i class="ti ti-user-star" aria-hidden="true"></i> {{OPTION_1}}</div>
+    <div class="mg-opt" role="button" tabindex="0"><i class="ti ti-user" aria-hidden="true"></i> {{OPTION_2}}</div>
+    <div class="mg-opt" role="button" tabindex="0"><i class="ti ti-user" aria-hidden="true"></i> {{OPTION_3}}</div>
     <!-- ── end repeat ── -->
   </div>
 
@@ -59,18 +59,25 @@
 
   <div style="border-top:1px solid var(--bd);padding-top:12px;margin-top:12px;display:flex;gap:8px;align-items:center">
     <span style="font:400 11px var(--f-body);color:var(--faint);flex:1">Picking sends the name to the orchestrator — no numbers to type</span>
-    <div class="mg-cancel" role="button" tabindex="0" onclick="sendPrompt('Cancel that')"><i class="ti ti-x" aria-hidden="true" style="font-size:15px"></i> Cancel</div>
+    <div class="mg-cancel" role="button" tabindex="0"><i class="ti ti-x" aria-hidden="true" style="font-size:15px"></i> Cancel</div>
   </div>
 </div>
 <script>
 (function(){
-  // divs act as buttons: Enter/Space triggers the click
-  [].slice.call(document.querySelectorAll('.mg-opt,.mg-cancel')).forEach(function(el){
+  // Each control sends exactly what's in the widget — the row's own label, the typed
+  // name, or "Cancel" — verbatim, no rewriting.
+  [].slice.call(document.querySelectorAll('.mg-opt')).forEach(function(el){
+    el.addEventListener('click',function(){ sendPrompt(el.textContent.trim()); });
     el.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
   });
+  var cancel=document.querySelector('.mg-cancel');
+  if(cancel){
+    cancel.addEventListener('click',function(){ sendPrompt('Cancel'); });
+    cancel.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cancel.click(); } });
+  }
   var inp=document.getElementById('mg-new');
   if(inp){ inp.addEventListener('keydown',function(e){
-    if(e.key==='Enter'){var v=(inp.value||'').trim(); if(v){sendPrompt("Let's set up a new client: "+v);}}
+    if(e.key==='Enter'){var v=(inp.value||'').trim(); if(v){ sendPrompt(v); }}
   }); }
 })();
 </script>

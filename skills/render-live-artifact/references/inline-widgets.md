@@ -32,27 +32,37 @@ Inline mode requires the visualize inline-widget tools in THIS session:
   in plain numbered text, and render returns the normal way (a live Cowork artifact per
   this skill's main flow, or a plain formatted answer). Never block on the tool.
 
-## What the widgets send (natural messages, no machine prefix)
+## What the widgets send (exactly what's in the widget)
 
-Widget buttons fire `sendPrompt(...)` with a message that reads like the user typed it —
-NO `ir:` prefix or command codes (those show up in the chat and look machine-y). When a
-widget is on screen and one of these arrives, you already know it's the reply to the
-orchestrator you just relayed — route it accordingly:
+Widget controls fire `sendPrompt(...)` with the LITERAL content of the widget — the
+row's own label, the text the user typed, or the button's own label — verbatim, with NO
+prefix, wrapper, or rewriting (a rewritten message shows up in the chat and reads
+machine-y, and Claude re-processes it at tool-call time anyway). When a widget is on
+screen you already know what the message is a reply to:
 
-| The user's message | What you do |
+| What the widget sends | What you do |
 |---|---|
-| "Here are my answers — 1) … · 2) … · …" | thread the answers back to the SAME orchestrator session in ONE tool call |
-| "Let's work on <name>" | that's the picked option (e.g. the client) — continue with it selected |
-| "Let's set up a new client: <name>" | create/select the new client, then continue |
-| "Save this as a live page" | promote the last orchestrator result to a LIVE Cowork artifact (the main render-live-artifact flow) |
-| "Run that again" | re-run the same orchestrator with the same args |
-| "Please refine this — <note>" | continue the same session with this refinement |
-| "Skip this step" / "Cancel that" | skip the current ask / abandon the interaction cleanly |
+| the answers, one per line, in question order (exactly as typed) | map them to the questions you asked and thread them back to the SAME orchestrator session in ONE tool call |
+| the picked option's label (e.g. "aruna") | that's the selection (e.g. the client) — continue with it |
+| the typed name from the add-new field (e.g. "Foo Inc") | it isn't in the list → create/select that new entry, then continue |
+| "Save as live page" | promote the last orchestrator result to a LIVE Cowork artifact (the main render-live-artifact flow) |
+| "Run again" | re-run the same orchestrator with the same args |
+| the refine note (exactly as typed) | continue the same session with this refinement |
+| "Skip" / "Cancel" | skip the current ask / abandon the interaction cleanly |
 
-You always hold the `ORCHESTRATOR_SESSION` id from the prior tool return, so the message
-never needs to carry it — you re-attach it when you call the tool. These phrasings are
-conventions, not magic strings: read intent from the on-screen widget + context, not a
-prefix.
+## Pass it straight through (no preamble, no rewriting)
+
+When one of these widget messages arrives, **forward it to the orchestrator immediately**:
+
+- Do NOT write a preamble ("Great, let me set that up…"), do NOT restate or paraphrase
+  the user's input, and do NOT reformat their answers beyond mapping them to the
+  questions the orchestrator asked. The user's words go to the tool as-is.
+- You always hold the `ORCHESTRATOR_SESSION` id from the prior return, so the message
+  never needs to carry it — you re-attach it on the call.
+- Keep any chat prose to at most one short line; ideally just call the tool and render
+  the next widget. The widget already showed the user what they chose.
+- These are conventions, not magic strings: read intent from the on-screen widget +
+  context, never from a prefix.
 
 ## When the orchestrator ASKS → `templates/inline-ask.html`
 
@@ -67,18 +77,18 @@ multi-turn interview ("Question 1 of N"), a clarification, or a set of choices.
 4. Render `inline-ask.html` via `show_widget`: one field per question, pre-filled with
    the draft, a live `answered/N` progress bar, and Skip/Cancel. Repeat the `.ia-block`
    per question and fill every `{{...}}`.
-5. On submit the widget sends "Here are my answers — 1) … · 2) … · …". Thread all answers
-   back to the orchestrator in ONE call → it jumps straight to producing its result.
+5. On submit the widget sends the answers verbatim, one per line in question order. Map
+   them to your questions and thread all answers to the orchestrator in ONE call → it
+   jumps straight to producing its result. No preamble, no rewriting.
 
 **Single free-text ask:** render `inline-ask.html` with one `.ia-block`.
 
 **Choice ask (pick one — e.g. the client selector / "reply with the number" case):**
 copy `templates/inline-choice.html` VERBATIM and fill it — do NOT hand-write the widget.
-Repeat one `.mg-opt` button per option; put the option's REAL name as both the visible
-label and inside the `sendPrompt(...)` message (a natural sentence like "Let's work on
-Acme"). Send the **name**, never the raw number — the number is UI, not data. Keep the
-"add new" input only if the orchestrator allows a new entry (its Enter sends "Let's set
-up a new client: <name>"). The list is
+Repeat one `.mg-opt` row per option; put the option's REAL name as the visible label —
+the script sends that label verbatim on click, so the message is exactly the name (never
+the number — the number is UI, not data). Keep the "add new" input only if the
+orchestrator allows a new entry (its Enter sends the typed name verbatim). The list is
 already scrollable and capped. Never render a choice picker freehand — improvised markup
 is where host-variable / invisible-text bugs creep in.
 
@@ -94,7 +104,7 @@ Render the deliverable inline as a card. Fill `{{RESULT_BODY}}` by shape:
 - **HTML string** → inject it directly into `.ir-body`.
 
 The action row is the "add alongside" bridge:
-- **Save as live page** (primary) → on "Save this as a live page", build the durable LIVE
+- **Save as live page** (primary) → on "Save as live page", build the durable LIVE
   Cowork artifact using this skill's main flow (`templates/live-artifact.html`,
   `create_artifact` with the right `mcp_tools`). Inline first; full page on demand.
 - **Run again** / **Refine** continue the same session.
