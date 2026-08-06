@@ -1,9 +1,9 @@
 {
   "name": "hotei-marketplace",
-  "description": "Plugins from Hotei Media Production.",
+  "description": "Plugins from Mygentic.",
   "owner": {
-    "name": "Hotei Media Production",
-    "email": "hotei.media.production@gmail.com"
+    "name": "Mygentic",
+    "email": "support@mygentic.io"
   },
   "version": "1.0.0",
   "plugins": [
