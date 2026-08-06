@@ -2,7 +2,7 @@
   "mcpServers": {
     "ir-mcp": {
       "type": "http",
-      "url": "https://mcp.testir.xyz/mcp"
+      "url": "https://connect.mygentic.io/mcp"
     }
   }
 }
