@@ -1,6 +1,6 @@
 {
   "name": "live-output-artifacts",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "description": "Bundles your IR MCP server with live-artifact skills: auto-render any agent output as a live Cowork artifact, and a Rockstar Agents command center (agents, skills, tools, plus an Outputs tab listing every deliverable your agents produced — filterable by client, agent, and skill).",
   "author": {
     "name": "Hotei Media Production",

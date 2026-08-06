@@ -48,6 +48,10 @@ screen you already know what the message is a reply to:
 | "Save as live page" | promote the last orchestrator result to a LIVE Cowork artifact (the main render-live-artifact flow) |
 | "Run again" | re-run the same orchestrator with the same args |
 | the refine note (exactly as typed) | continue the same session with this refinement |
+| "Explain the strategy behind this." | explain the thinking/strategy behind the last result in plain terms (≤5-word-jargon rule); no tool call needed unless it helps |
+| a question typed in the result card's "Ask a question" box | ANSWER IT FROM THE KNOWLEDGE BASE — call the ir-mcp knowledge tool (the one whose name ends in `__search_knowledge`) with the question, then render the answer (inline result if widgets are available). Don't guess from memory when the Brain can answer. |
+| "That response was helpful." | thumbs-up feedback — call `record_feedback` with `rating:"up"` + context (see Feedback below), then acknowledge in ≤1 line |
+| a "what was off" note, or "That response wasn't quite right." | thumbs-down feedback — call `record_feedback` with `rating:"down"` + the note, briefly acknowledge, and offer to fix (a refine/re-run) |
 | "Skip" / "Cancel" | skip the current ask / abandon the interaction cleanly |
 
 ## Pass it straight through (no preamble, no rewriting)
@@ -103,11 +107,34 @@ Render the deliverable inline as a card. Fill `{{RESULT_BODY}}` by shape:
 - **Markdown / plain text** → an escaped `<pre>` block (or lightly formatted).
 - **HTML string** → inject it directly into `.ir-body`.
 
-The action row is the "add alongside" bridge:
-- **Save as live page** (primary) → on "Save as live page", build the durable LIVE
-  Cowork artifact using this skill's main flow (`templates/live-artifact.html`,
-  `create_artifact` with the right `mcp_tools`). Inline first; full page on demand.
+The card carries a rating control (thumbs) in its header and this action row:
+- **Save as live page** (primary) → build the durable LIVE Cowork artifact using this
+  skill's main flow (`templates/live-artifact.html`, `create_artifact` with the right
+  `mcp_tools`). Inline first; full page on demand.
+- **Explain this strategy** → explain the thinking behind the result in plain terms.
+  Teach, don't dump: no jargon without a five-word explanation. One short widget/answer.
+- **Ask a question** → opens a box; the user's question is a **knowledge-base query**.
+  Answer it by calling the ir-mcp knowledge tool (name ends `__search_knowledge`) and
+  rendering the answer (a fresh inline result when widgets are available). This is the
+  "ask a question to query the knowledge base" affordance — use the Brain, don't guess.
 - **Run again** / **Refine** continue the same session.
+
+**Thumbs feedback (response quality).** Thumbs up sends "That response was helpful.";
+thumbs down opens an optional "what was off" note. On either, **persist it by calling the
+ir-mcp feedback tool** (the one whose name ends in `__record_feedback`) — do NOT just
+reply or write a memory note:
+
+- `rating`: `"up"` for helpful, `"down"` otherwise.
+- `note`: the user's "what was off" text (down only), verbatim.
+- `orchestrator` / `skillId` / `skillName` / `clientId`: the source of the rated response
+  — you hold these from the session (the orchestrator you ran, the active client, etc.).
+- `outputId`: the deliverable's id if it came from `my_outputs`; `summary`: a ≤200-char
+  snippet of what was rated.
+
+Then acknowledge in ≤1 line. Thumbs down → also offer to fix it (refine or re-run). If
+`record_feedback` isn't available (older server), fall back to a memory note. This is the
+"start with thumbs up and down" loop — keep it lightweight, but the rating must land in
+the server, not the chat.
 
 Keep your chat prose to **one line** — the widget is the message.
 

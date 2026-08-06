@@ -21,15 +21,35 @@
   var ENDPOINT = window.__MCP_ENDPOINT || meta("mcp-endpoint") || "";
   var TOKEN    = window.__MCP_TOKEN    || meta("mcp-token")    || "";
 
-  var oai = (typeof window.openai === "object" && window.openai) || null;        // OpenAI / Codex Apps SDK
-  var gen = window.craftAgent || window.codex || window.mcpHost || window.host || null;
+  // Read hosts LIVE — ChatGPT/OpenAI set window.openai only AFTER this script runs.
+  function oai(){ return (typeof window.openai === "object" && window.openai) || null; }
+  function gen(){ return window.craftAgent || window.codex || window.mcpHost || window.host || null; }
+  function hostReady(){ var o=oai(), g=gen();
+    return (o && typeof o.callTool==="function") ||
+           (g && (typeof g.callMcpTool==="function" || typeof g.callTool==="function" || (g.tools&&typeof g.tools.call==="function"))) ||
+           !!ENDPOINT; }
+  // Wait up to ms for a host to appear (event + poll) so the first fetch isn't lost.
+  function waitForHost(ms){ return new Promise(function(resolve){
+    if (hostReady()) return resolve();
+    var done=false; function finish(){ if(done) return; done=true; clearInterval(iv); resolve(); }
+    var iv=setInterval(function(){ if(hostReady()) finish(); }, 60);
+    try{ window.addEventListener("openai:set_globals", function(){ if(hostReady()) finish(); }); }catch(e){}
+    setTimeout(finish, ms||4000);
+  }); }
+  // Normalize any host result into the {content|structuredContent} shape unwrap() expects.
+  function normalize(r){
+    if (r == null || typeof r !== "object") return r;
+    if (r.content || r.structuredContent != null || r.isError) return r;
+    if (r.result && typeof r.result==="object" && (r.result.content || r.result.structuredContent != null)) return r.result;
+    return { structuredContent: r };
+  }
 
   async function callViaHost(name, args){
-    args = args || {};
-    if (oai && typeof oai.callTool === "function")            return await oai.callTool(name, args);
-    if (gen && typeof gen.callMcpTool === "function")         return await gen.callMcpTool(name, args);
-    if (gen && typeof gen.callTool === "function")            return await gen.callTool(name, args);
-    if (gen && gen.tools && typeof gen.tools.call==="function") return await gen.tools.call({ name:name, arguments:args });
+    args = args || {}; var o=oai(), g=gen();
+    if (o && typeof o.callTool === "function")             return normalize(await o.callTool(name, args));
+    if (g && typeof g.callMcpTool === "function")          return normalize(await g.callMcpTool(name, args));
+    if (g && typeof g.callTool === "function")             return normalize(await g.callTool(name, args));
+    if (g && g.tools && typeof g.tools.call==="function")  return normalize(await g.tools.call({ name:name, arguments:args }));
     return undefined; // no host bridge detected
   }
 
@@ -52,7 +72,7 @@
     return data ? data.result : null;
   }
   async function callViaHttp(name, args){
-    if(!ENDPOINT) throw new Error("No MCP host detected. Open this inside Cowork/Codex, or set window.__MCP_ENDPOINT (+ window.__MCP_TOKEN).");
+    if(!ENDPOINT) throw new Error("No MCP host detected. Open this inside ChatGPT, Claude Cowork, or Codex — or set window.__MCP_ENDPOINT (+ window.__MCP_TOKEN).");
     if(!_inited){
       await rpc("initialize",{ protocolVersion:"2025-06-18", capabilities:{}, clientInfo:{ name:"loa-host-adapter", version:"1.0" } });
       await rpc("notifications/initialized",{},true);
@@ -63,23 +83,24 @@
 
   window.cowork = window.cowork || {};
   window.cowork.callMcpTool = async function(name, args){
+    if (!hostReady()) await waitForHost(4000);     // ChatGPT injects window.openai late
     var viaHost = await callViaHost(name, args);
     if (viaHost !== undefined) return viaHost;     // host bridge answered (incl. null)
     return await callViaHttp(name, args);          // else authenticated HTTP fallback
   };
   if (typeof window.cowork.askClaude !== "function"){
-    window.cowork.askClaude = function(prompt, data){
-      if (gen && typeof gen.askLLM   === "function") return gen.askLLM(prompt, data);
-      if (gen && typeof gen.complete === "function") return gen.complete(prompt, data);
+    window.cowork.askClaude = function(prompt, data){ var g=gen();
+      if (g && typeof g.askLLM   === "function") return g.askLLM(prompt, data);
+      if (g && typeof g.complete === "function") return g.complete(prompt, data);
       return Promise.resolve(null);                // no host LLM → templates use deterministic fallback
     };
   }
 
-  // Host-aware "launch a skill": Codex follow-up message, generic host hook, else
-  // the caller's claude:// link + clipboard copy already handle it.
-  window.__LOA_START = function(prompt){
-    if (oai && typeof oai.sendFollowUpMessage === "function"){ try{ oai.sendFollowUpMessage({ prompt:prompt }); return true; }catch(e){} }
-    if (gen && typeof gen.startChat === "function"){ try{ gen.startChat(prompt); return true; }catch(e){} }
+  // Host-aware "launch a skill": ChatGPT/OpenAI or Codex follow-up message, generic
+  // host hook, else the caller's claude:// link + clipboard copy already handle it.
+  window.__LOA_START = function(prompt){ var o=oai(), g=gen();
+    if (o && typeof o.sendFollowUpMessage === "function"){ try{ o.sendFollowUpMessage({ prompt:prompt }); return true; }catch(e){} }
+    if (g && typeof g.startChat === "function"){ try{ g.startChat(prompt); return true; }catch(e){} }
     return false;
   };
 })();
@@ -467,6 +488,14 @@
   .bd-dial__nums{ display:flex; align-items:baseline; gap:8px; margin-bottom:5px; }
   .bd-dial__actual{ font-family:var(--font-display); font-size:26px; font-weight:400; color:var(--text-primary); line-height:1; }
   .bd-dial__target{ font:600 12px var(--font-mono); color:var(--text-faint); }
+  .bd-rag{ display:flex; gap:8px; margin:8px 0 14px; }
+  .bd-rag button{ flex:1; padding:11px 10px; border-radius:var(--r-md); border:1px solid var(--border); background:var(--bg-overlay); font:600 13px var(--font-label); color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:7px; transition:all .15s var(--ease); }
+  .bd-rag button:hover{ border-color:var(--border-hi); }
+  .bd-rag button i{ width:9px; height:9px; border-radius:50%; display:inline-block; flex:none; }
+  .bd-rag button[data-v="green"] i{ background:var(--rag-green); } .bd-rag button[data-v="amber"] i{ background:var(--rag-amber); } .bd-rag button[data-v="red"] i{ background:var(--rag-red); }
+  .bd-rag button.on[data-v="green"]{ color:var(--rag-green); border-color:var(--rag-green); background:var(--rag-green-dim); }
+  .bd-rag button.on[data-v="amber"]{ color:var(--rag-amber); border-color:var(--rag-amber); background:var(--rag-amber-dim); }
+  .bd-rag button.on[data-v="red"]{ color:var(--rag-red); border-color:var(--rag-red); background:var(--rag-red-dim); }
   .bd-dial__metric{ font-size:11.5px; color:var(--text-muted); line-height:1.45; }
   .bd-cons{ margin:16px 0 6px; padding:16px 18px; border-radius:var(--r-lg); background:linear-gradient(135deg,var(--accent-dim),rgba(139,122,232,.08));
     border:1px solid rgba(58,79,184,.28); box-shadow:var(--sh-sm); }
@@ -1507,8 +1536,8 @@
   let bdMode="intake", bdSteps=[], bdIdx=0, bdDraft=null, bdClosing=null;
   function bdSeedDials(){ const out={};
     DIAL_KEYS.forEach(k=>{ const p=DIALS&&DIALS.dials&&DIALS.dials[k];
-      out[k]= p ? { metric:p.metric,unit:p.unit,definition:p.definition,form:p.form,shape:p.shape,choice:p.choice,currency:p.currency,actual:null,target:null,rag:null }
-                : { metric:null,unit:null,definition:null,form:null,shape:null,choice:null,currency:null,actual:null,target:null,rag:null }; });
+      out[k]= p ? { metric:p.metric,unit:p.unit,definition:p.definition,form:p.form,shape:p.shape,choice:p.choice,currency:p.currency,actual:null,target:null,rag:null,selfRag:null }
+                : { metric:null,unit:null,definition:null,form:null,shape:null,choice:null,currency:null,actual:null,target:null,rag:null,selfRag:null }; });
     return out; }
   function bdFreshDraft(){ return { sprint:(DIALS&&DIALS.sprint)||1, horizon:(DIALS&&DIALS.horizon)||null, goal:"", goal_measurable:true,
     assessed_on:null, constraint:[], dials:bdSeedDials(), roadmap:[], history:(DIALS&&DIALS.history)||[], goalJudge:null, closeNote:"" }; }
@@ -1574,9 +1603,15 @@
           <div class="bd-choice" id="bd-branch" data-branch="${sp.branch}">`+opts.map(([v,t,s])=>`<button data-v="${v}" class="${cur===v?"on":""}"><span class="ct">${t}</span><span class="cs">${s}</span></button>`).join("")+`</div>`;
       }
       body=`<h2 class="bd-q">${sp.q}</h2><p class="bd-help">${sp.help}</p>${branch}
+        <p class="bd-note" style="margin:12px 0 2px">Quick read &mdash; tap where this dial is right now:</p>
+        <div class="bd-rag" id="bd-rag" role="group" aria-label="Quick self-rating">
+          <button type="button" data-v="green" class="${bdDraft.dials[k].selfRag==="green"?"on":""}"><i></i> On track</button>
+          <button type="button" data-v="amber" class="${bdDraft.dials[k].selfRag==="amber"?"on":""}"><i></i> Slipping</button>
+          <button type="button" data-v="red" class="${bdDraft.dials[k].selfRag==="red"?"on":""}"><i></i> Struggling</button>
+        </div>
         ${sp.currency&&!sp.locked?`<div class="bd-fields">${bdField("bd-cur","Currency","$","","$")}</div>`:""}
         <div class="bd-fields">${bdField("bd-actual",sp.actualL,bdDraft.dials[k].actual,sp.unit)}${bdField("bd-target",sp.targetL,bdDraft.dials[k].target,sp.unit)}</div>
-        <p class="bd-note">No number is fine &mdash; but an unmeasured dial is <b>red</b> until you have one. You can't manage what you're not counting.</p>`;
+        <p class="bd-note">A tap sets the colour; enter exact numbers for a precise read &mdash; they win when present. An unmeasured, unrated dial stays <b>red</b>.</p>`;
     } else if(step==="compare"){ eyebrow="Phase 6 &middot; Close &amp; re-run"; footPrimary="Log this sprint &rarr;";
       body=bdCompareBody();
     } else if(step==="review"){ eyebrow="Phase 3&ndash;5 &middot; Constraint, roadmap &amp; deploy"; footPrimary="Start the sprint &rarr;";
@@ -1603,7 +1638,9 @@
       if(br){ br.querySelectorAll("button").forEach(b=>b.onclick=()=>{ const v=b.getAttribute("data-v"), which=br.getAttribute("data-branch");
         if(which==="delivery") bdDraft.dials[k].shape=v; else bdDraft.dials[k].choice=v;
         bdCapture(step); bdRenderStep(); }); }
-      setTimeout(()=>{ const a=document.getElementById("bd-actual"); if(a) a.focus(); },40);
+      const rg=document.getElementById("bd-rag");
+      if(rg){ rg.querySelectorAll("button").forEach(b=>b.onclick=()=>{ bdDraft.dials[k].selfRag=b.getAttribute("data-v");
+        rg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b)); }); }
     }
     if(step==="compare"){ const j=document.getElementById("bd-judge"); if(j) j.querySelectorAll("button").forEach(b=>b.onclick=()=>{ bdDraft.goalJudge=b.getAttribute("data-v"); j.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b)); }); }
   }
@@ -1631,7 +1668,8 @@
   };
 
   // Phase 3-4: finalize RAG + constraint + roadmap for the review screen
-  function bdFinalizeRag(dm){ DIAL_KEYS.forEach(k=>{ const x=dm[k]; x.rag=bdRag(x.actual,x.target); }); }
+  function bdFinalizeRag(dm){ DIAL_KEYS.forEach(k=>{ const x=dm[k];
+    x.rag=(bdNum(x.actual)==null && x.selfRag) ? x.selfRag : bdRag(x.actual,x.target); }); }
   function bdReviewBody(){
     bdFinalizeRag(bdDraft.dials);
     const sel=bdConstraintDials(bdDraft); const roadmap=bdBuildRoadmap(bdDraft, sel);

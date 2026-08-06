@@ -1,6 +1,6 @@
 <!-- INLINE RESULT widget — render an ir-mcp orchestrator's RETURNED OUTPUT as an
-     in-chat card (via the visualize `show_widget` tool), with an action row that
-     lets the user act on it without re-typing.
+     in-chat card (via the visualize `show_widget` tool), with an action row and a
+     rating control so the user can act on it without re-typing.
 
      WHEN: an ir-mcp orchestrator finished and handed back a deliverable/answer.
 
@@ -10,34 +10,40 @@
           {{RESULT_BODY}} — the actual rendered output. For JSON, drop a small table
           or key/value list; for markdown/text, an escaped block; for HTML, inject it.
           Keep it readable — this card IS the message, so your prose stays one line.
-       3. The action row sends exactly the button's own label ("Save as live page",
-          "Run again") or, for Refine, the note typed verbatim — no rewriting, no prefix:
-          • "Save as live page" → build the LIVE Cowork artifact via the
-            render-live-artifact Cowork flow (the durable, reopenable page). This is the
-            "add alongside" bridge: inline first, live page on demand.
-          • "Run again" / "Refine" continue the SAME orchestrator session.
+       3. Controls send clean text (no prefix). Handle each per references/inline-widgets.md:
+          • Save as live page → build the LIVE Cowork artifact (durable, reopenable page).
+          • Explain this strategy → explain the thinking behind the output in plain terms.
+          • Ask a question → the user's question; ANSWER IT FROM THE KNOWLEDGE BASE
+            (call the ir-mcp knowledge tool, e.g. search_knowledge), then render the answer.
+          • Run again / Refine → continue the SAME orchestrator session.
+          • Thumbs up / down → response-quality feedback; call the ir-mcp `record_feedback`
+            tool with the rating + context (thumbs down opens an optional "what was off"
+            note), then acknowledge briefly. See references/inline-widgets.md § Feedback.
 
-     THEME + HOST NOTE: fixed MyGentic light/paper palette (matches the command
-     centre). The visualize host FORCE-STYLES real form controls to its own theme,
-     so the action row is styled <div>s (not <button>) and the real refine <input> is
-     forced back with !important. NEVER use host CSS variables (--surface-*,
-     --text-*) — they follow the host dark mode and go invisible on a light card. -->
+     THEME + HOST NOTE: fixed MyGentic light/paper palette (matches the command centre).
+     The visualize host FORCE-STYLES real form controls, so every button is a styled
+     <div> and the one real <input> is forced back with !important. NEVER use host CSS
+     variables (--surface-*, --text-*) — they go invisible on a light card. -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;700&family=Plus+Jakarta+Sans:wght@500;700&display=swap');
 .mg-res{--paper:#fff;--base:#f4f7fb;--raised:#eef2f8;--bd:rgba(11,14,46,.10);--ink:#0b0e2e;--ink2:#242b5c;--muted:#4a5578;--faint:#8a93b0;--accent:#3A4FB8;--f-disp:"Instrument Serif",Georgia,serif;--f-body:"Inter",-apple-system,system-ui,sans-serif;--f-lbl:"Plus Jakarta Sans","Inter",sans-serif;background:var(--paper);border:1px solid var(--bd);border-radius:17px;padding:18px 20px;box-shadow:0 8px 24px rgba(11,14,46,.06);font-family:var(--f-body);color:var(--ink)}
 .mg-res *{box-sizing:border-box}
 .mg-ttl{font-family:var(--f-disp);font-size:19px;font-weight:400;color:var(--ink);line-height:1.1}
 .mg-ttl b{color:var(--accent);font-weight:400}
-.mg-chip{font:500 11px var(--f-lbl);color:var(--muted);border:1px solid var(--bd);border-radius:999px;padding:3px 11px;margin-left:auto}
+.mg-chip{font:500 11px var(--f-lbl);color:var(--muted);border:1px solid var(--bd);border-radius:999px;padding:3px 11px}
+.mg-thumb{width:28px;height:28px;border-radius:8px;border:1px solid var(--bd);color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;user-select:none}
+.mg-thumb i{font-size:15px}
+.mg-thumb:hover{color:var(--ink);border-color:rgba(11,14,46,.18)}
+.mg-thumb.on{color:var(--accent);border-color:var(--accent);background:rgba(58,79,184,.08)}
 .ir-body{font:400 13px/1.6 var(--f-body);color:var(--ink2)}
 .ir-body pre{white-space:pre-wrap;background:var(--base);border-radius:9px;padding:11px 13px;margin:0;overflow-x:auto;color:var(--ink)}
 .ir-body table{border-collapse:collapse;width:100%;font-size:12.5px}
 .ir-body th,.ir-body td{text-align:left;border-bottom:1px solid var(--bd);padding:7px 9px;vertical-align:top}
 .ir-body th{color:var(--muted);font-weight:500;width:34%}
-/* real refine input — force past the host's pre-styling */
-.mg-res input.ir-refine{width:100%;font:400 13px var(--f-body)!important;color:var(--ink)!important;-webkit-text-fill-color:var(--ink)!important;background:var(--base)!important;border:1px solid var(--bd)!important;border-radius:9px!important;padding:9px 11px!important;margin-top:10px;display:none}
-.mg-res input.ir-refine::placeholder{color:var(--faint)!important;-webkit-text-fill-color:var(--faint)!important;opacity:1}
-.mg-res input.ir-refine:focus{outline:none!important;border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(58,79,184,.12)!important}
+/* the one real form control — force past the host's pre-styling */
+.mg-res input.mg-in{width:100%;font:400 13px var(--f-body)!important;color:var(--ink)!important;-webkit-text-fill-color:var(--ink)!important;background:var(--base)!important;border:1px solid var(--bd)!important;border-radius:9px!important;padding:9px 11px!important;margin-top:10px;display:none}
+.mg-res input.mg-in::placeholder{color:var(--faint)!important;-webkit-text-fill-color:var(--faint)!important;opacity:1}
+.mg-res input.mg-in:focus{outline:none!important;border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(58,79,184,.12)!important}
 /* action controls are DIVs so the host cannot re-theme them */
 .mg-act{font:500 13px var(--f-lbl);padding:9px 13px;border-radius:9px;border:1px solid var(--bd);background:var(--paper);color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;user-select:none}
 .mg-act:hover{color:var(--ink);border-color:rgba(11,14,46,.18)}
@@ -48,34 +54,46 @@
   <div style="display:flex;align-items:center;gap:9px;margin-bottom:13px">
     <i class="ti ti-sparkles" aria-hidden="true" style="font-size:18px;color:var(--accent)"></i>
     <span class="mg-ttl"><b>{{ORCH_NAME}}</b></span>
-    <span class="mg-chip">{{RESULT_CHIP}}</span>
+    <span class="mg-chip" style="margin-left:auto">{{RESULT_CHIP}}</span>
+    <div class="mg-thumb" id="mg-up" role="button" tabindex="0" aria-label="Helpful"><i class="ti ti-thumb-up" aria-hidden="true"></i></div>
+    <div class="mg-thumb" id="mg-down" role="button" tabindex="0" aria-label="Not helpful"><i class="ti ti-thumb-down" aria-hidden="true"></i></div>
   </div>
 
   <div class="ir-body">
     {{RESULT_BODY}}
   </div>
 
-  <input type="text" id="ir-refine-input" class="ir-refine" placeholder="What should change? Press Enter to send…" />
+  <input type="text" id="mg-in" class="mg-in" placeholder="Press Enter to send…" />
 
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:15px">
-    <div class="mg-act mg-primary" role="button" tabindex="0" style="flex:1;min-width:180px" onclick="sendPrompt('Save as live page')"><i class="ti ti-external-link" aria-hidden="true"></i> Save as live page</div>
+    <div class="mg-act mg-primary" role="button" tabindex="0" style="flex:1;min-width:170px" onclick="sendPrompt('Save as live page')"><i class="ti ti-external-link" aria-hidden="true"></i> Save as live page</div>
+    <div class="mg-act" id="mg-explain" role="button" tabindex="0"><i class="ti ti-bulb" aria-hidden="true" style="font-size:15px"></i> Explain this strategy</div>
+    <div class="mg-act" id="mg-ask" role="button" tabindex="0"><i class="ti ti-help" aria-hidden="true" style="font-size:15px"></i> Ask a question</div>
     <div class="mg-act" role="button" tabindex="0" onclick="sendPrompt('Run again')"><i class="ti ti-refresh" aria-hidden="true" style="font-size:15px"></i> Run again</div>
-    <div class="mg-act" id="ir-refine-btn" role="button" tabindex="0"><i class="ti ti-wand" aria-hidden="true" style="font-size:15px"></i> Refine</div>
+    <div class="mg-act" id="mg-refine" role="button" tabindex="0"><i class="ti ti-wand" aria-hidden="true" style="font-size:15px"></i> Refine</div>
   </div>
 </div>
 <script>
 (function(){
-  var inp=document.getElementById('ir-refine-input'), btn=document.getElementById('ir-refine-btn');
-  function toggleRefine(){
-    if(inp.style.display!=='block'){inp.style.display='block';inp.focus();return;}
-    var v=(inp.value||'').trim(); if(v){sendPrompt(v);}
-  }
-  btn.addEventListener('click',toggleRefine);
-  inp.addEventListener('keydown',function(e){
-    if(e.key==='Enter'){var v=(inp.value||'').trim(); if(v){sendPrompt(v);}}
-  });
-  [].slice.call(document.querySelectorAll('.mg-act')).forEach(function(el){
-    el.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
+  var inp=document.getElementById('mg-in'), mode=null;
+  function openInput(m, ph){ mode=m; inp.value=''; inp.placeholder=ph; inp.style.display='block'; inp.focus(); }
+  function bind(id, fn){ var el=document.getElementById(id); if(el){ el.addEventListener('click',fn);
+    el.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fn(); } }); } }
+
+  bind('mg-explain', function(){ sendPrompt('Explain the strategy behind this.'); });
+  bind('mg-ask',     function(){ openInput('ask', 'Ask a question — press Enter'); });
+  bind('mg-refine',  function(){ openInput('refine', 'What should change? Press Enter'); });
+  bind('mg-up',   function(){ var u=document.getElementById('mg-up'),d=document.getElementById('mg-down');
+    u.classList.add('on'); d.classList.remove('on'); sendPrompt('That response was helpful.'); });
+  bind('mg-down', function(){ var u=document.getElementById('mg-up'),d=document.getElementById('mg-down');
+    d.classList.add('on'); u.classList.remove('on'); openInput('down', 'What was off? Press Enter (or leave blank)'); });
+
+  inp.addEventListener('keydown', function(e){
+    if(e.key!=='Enter') return;
+    var v=(inp.value||'').trim();
+    if(mode==='down'){ sendPrompt(v ? v : "That response wasn't quite right."); }
+    else if(v){ sendPrompt(v); }   // ask / refine → the user's text, verbatim
+    inp.style.display='none';
   });
 })();
 </script>

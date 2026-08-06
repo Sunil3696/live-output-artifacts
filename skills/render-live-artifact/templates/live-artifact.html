@@ -21,15 +21,35 @@
   var ENDPOINT = window.__MCP_ENDPOINT || meta("mcp-endpoint") || "";
   var TOKEN    = window.__MCP_TOKEN    || meta("mcp-token")    || "";
 
-  var oai = (typeof window.openai === "object" && window.openai) || null;        // OpenAI / Codex Apps SDK
-  var gen = window.craftAgent || window.codex || window.mcpHost || window.host || null;
+  // Read hosts LIVE — ChatGPT/OpenAI set window.openai only AFTER this script runs.
+  function oai(){ return (typeof window.openai === "object" && window.openai) || null; }
+  function gen(){ return window.craftAgent || window.codex || window.mcpHost || window.host || null; }
+  function hostReady(){ var o=oai(), g=gen();
+    return (o && typeof o.callTool==="function") ||
+           (g && (typeof g.callMcpTool==="function" || typeof g.callTool==="function" || (g.tools&&typeof g.tools.call==="function"))) ||
+           !!ENDPOINT; }
+  // Wait up to ms for a host to appear (event + poll) so the first fetch isn't lost.
+  function waitForHost(ms){ return new Promise(function(resolve){
+    if (hostReady()) return resolve();
+    var done=false; function finish(){ if(done) return; done=true; clearInterval(iv); resolve(); }
+    var iv=setInterval(function(){ if(hostReady()) finish(); }, 60);
+    try{ window.addEventListener("openai:set_globals", function(){ if(hostReady()) finish(); }); }catch(e){}
+    setTimeout(finish, ms||4000);
+  }); }
+  // Normalize any host result into the {content|structuredContent} shape unwrap() expects.
+  function normalize(r){
+    if (r == null || typeof r !== "object") return r;
+    if (r.content || r.structuredContent != null || r.isError) return r;
+    if (r.result && typeof r.result==="object" && (r.result.content || r.result.structuredContent != null)) return r.result;
+    return { structuredContent: r };
+  }
 
   async function callViaHost(name, args){
-    args = args || {};
-    if (oai && typeof oai.callTool === "function")            return await oai.callTool(name, args);
-    if (gen && typeof gen.callMcpTool === "function")         return await gen.callMcpTool(name, args);
-    if (gen && typeof gen.callTool === "function")            return await gen.callTool(name, args);
-    if (gen && gen.tools && typeof gen.tools.call==="function") return await gen.tools.call({ name:name, arguments:args });
+    args = args || {}; var o=oai(), g=gen();
+    if (o && typeof o.callTool === "function")             return normalize(await o.callTool(name, args));
+    if (g && typeof g.callMcpTool === "function")          return normalize(await g.callMcpTool(name, args));
+    if (g && typeof g.callTool === "function")             return normalize(await g.callTool(name, args));
+    if (g && g.tools && typeof g.tools.call==="function")  return normalize(await g.tools.call({ name:name, arguments:args }));
     return undefined; // no host bridge detected
   }
 
@@ -52,7 +72,7 @@
     return data ? data.result : null;
   }
   async function callViaHttp(name, args){
-    if(!ENDPOINT) throw new Error("No MCP host detected. Open this inside Cowork/Codex, or set window.__MCP_ENDPOINT (+ window.__MCP_TOKEN).");
+    if(!ENDPOINT) throw new Error("No MCP host detected. Open this inside ChatGPT, Claude Cowork, or Codex — or set window.__MCP_ENDPOINT (+ window.__MCP_TOKEN).");
     if(!_inited){
       await rpc("initialize",{ protocolVersion:"2025-06-18", capabilities:{}, clientInfo:{ name:"loa-host-adapter", version:"1.0" } });
       await rpc("notifications/initialized",{},true);
@@ -63,23 +83,24 @@
 
   window.cowork = window.cowork || {};
   window.cowork.callMcpTool = async function(name, args){
+    if (!hostReady()) await waitForHost(4000);     // ChatGPT injects window.openai late
     var viaHost = await callViaHost(name, args);
     if (viaHost !== undefined) return viaHost;     // host bridge answered (incl. null)
     return await callViaHttp(name, args);          // else authenticated HTTP fallback
   };
   if (typeof window.cowork.askClaude !== "function"){
-    window.cowork.askClaude = function(prompt, data){
-      if (gen && typeof gen.askLLM   === "function") return gen.askLLM(prompt, data);
-      if (gen && typeof gen.complete === "function") return gen.complete(prompt, data);
+    window.cowork.askClaude = function(prompt, data){ var g=gen();
+      if (g && typeof g.askLLM   === "function") return g.askLLM(prompt, data);
+      if (g && typeof g.complete === "function") return g.complete(prompt, data);
       return Promise.resolve(null);                // no host LLM → templates use deterministic fallback
     };
   }
 
-  // Host-aware "launch a skill": Codex follow-up message, generic host hook, else
-  // the caller's claude:// link + clipboard copy already handle it.
-  window.__LOA_START = function(prompt){
-    if (oai && typeof oai.sendFollowUpMessage === "function"){ try{ oai.sendFollowUpMessage({ prompt:prompt }); return true; }catch(e){} }
-    if (gen && typeof gen.startChat === "function"){ try{ gen.startChat(prompt); return true; }catch(e){} }
+  // Host-aware "launch a skill": ChatGPT/OpenAI or Codex follow-up message, generic
+  // host hook, else the caller's claude:// link + clipboard copy already handle it.
+  window.__LOA_START = function(prompt){ var o=oai(), g=gen();
+    if (o && typeof o.sendFollowUpMessage === "function"){ try{ o.sendFollowUpMessage({ prompt:prompt }); return true; }catch(e){} }
+    if (g && typeof g.startChat === "function"){ try{ g.startChat(prompt); return true; }catch(e){} }
     return false;
   };
 })();
